@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import { TelescopePosition } from '../types/astronomy';
 import { screenToTelescopeCoordinates } from '../utils/starPositions';
 
-export const useGalaxyInteraction = () => {
+export const useGalaxyInteraction = (containerWidth: number, containerHeight: number) => {
   const [position, setPosition] = useState<TelescopePosition>({ x: 0, y: 0, zoom: 3 }); // Changed base zoom to 3x
   const [isDragging, setIsDragging] = useState(false);
   const [coordinates, setCoordinates] = useState({ ra: '12h 0m', dec: '+00°' });
@@ -26,11 +26,12 @@ export const useGalaxyInteraction = () => {
     }));
 
     // Update coordinates
-    const newCoords = screenToTelescopeCoordinates(e.clientX, e.clientY);
+    const newCoords = screenToTelescopeCoordinates(e.clientX, e.clientY, containerWidth, containerHeight);
     setCoordinates(newCoords);
 
     dragStartRef.current = { x: e.clientX, y: e.clientY };
   }, [isDragging]);
+  }, [isDragging, containerWidth, containerHeight]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -47,13 +48,13 @@ export const useGalaxyInteraction = () => {
   const focusOnPosition = useCallback((x: number, y: number) => {
     setPosition(prev => ({
       ...prev,
-      x: -x + 400,
-      y: -y + 300
+      x: -x + containerWidth / 2,
+      y: -y + containerHeight / 2
     }));
 
-    const newCoords = screenToTelescopeCoordinates(x, y);
+    const newCoords = screenToTelescopeCoordinates(x, y, containerWidth, containerHeight);
     setCoordinates(newCoords);
-  }, []);
+  }, [containerWidth, containerHeight]);
 
   return {
     position,

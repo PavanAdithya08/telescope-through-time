@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, forwardRef } from 'react';
 import { Star, FilterType } from '../types/astronomy';
 
 interface GalaxyProps {
   stars: Star[];
+  containerWidth: number;
+  containerHeight: number;
   position: { x: number; y: number; zoom: number };
   selectedStar: Star | null;
   filter: FilterType;
@@ -11,10 +13,13 @@ interface GalaxyProps {
   onMouseMove: (e: React.MouseEvent) => void;
   onMouseUp: () => void;
   isDragging: boolean;
+  onClick?: () => void;
 }
 
-export const Galaxy: React.FC<GalaxyProps> = ({
+export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
   stars,
+  containerWidth,
+  containerHeight,
   position,
   selectedStar,
   filter,
@@ -22,8 +27,9 @@ export const Galaxy: React.FC<GalaxyProps> = ({
   onMouseDown,
   onMouseMove,
   onMouseUp,
-  isDragging
-}) => {
+  isDragging,
+  onClick
+}, ref) => {
   const filteredStars = useMemo(() => {
     if (filter === 'All') return stars;
     return stars.filter(star => {
@@ -39,11 +45,19 @@ export const Galaxy: React.FC<GalaxyProps> = ({
     });
   }, [stars, filter]);
 
+  // Calculate responsive crosshair size
+  const crosshairSize = Math.min(containerWidth, containerHeight) * 0.3;
+  const centerGlowSize = Math.min(containerWidth, containerHeight) * 0.15;
+
   return (
-    <div className="relative w-full h-full overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div 
+      ref={ref}
+      className="relative w-full h-full overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900"
+      onClick={onClick}
+    >
       {/* Background stars */}
       <div className="absolute inset-0 opacity-30">
-        {Array.from({ length: 200 }).map((_, i) => (
+        {Array.from({ length: Math.floor((containerWidth * containerHeight) / 4000) }).map((_, i) => (
           <div
             key={`bg-star-${i}`}
             className="absolute w-0.5 h-0.5 bg-white rounded-full animate-pulse"
@@ -71,10 +85,12 @@ export const Galaxy: React.FC<GalaxyProps> = ({
       >
         {/* Galaxy center glow */}
         <div
-          className="absolute w-32 h-32 bg-gradient-radial from-yellow-400/20 via-orange-500/10 to-transparent rounded-full"
+          className="absolute bg-gradient-radial from-yellow-400/20 via-orange-500/10 to-transparent rounded-full"
           style={{
-            left: '50%',
-            top: '50%',
+            width: `${centerGlowSize}px`,
+            height: `${centerGlowSize}px`,
+            left: `${containerWidth / 2}px`,
+            top: `${containerHeight / 2}px`,
             transform: 'translate(-50%, -50%)'
           }}
         />
@@ -87,14 +103,14 @@ export const Galaxy: React.FC<GalaxyProps> = ({
           return (
             <div
               key={star.id}
-              className={`absolute rounded-full transition-all duration-300 cursor-pointer
+              className={`absolute rounded-full transition-all duration-300 cursor-pointer touch-manipulation
                 ${isSelected 
                   ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50 animate-pulse z-20' 
                   : star.hasEvents 
                     ? 'bg-blue-400 hover:bg-blue-300 hover:shadow-lg hover:shadow-blue-400/50 z-10' 
                     : 'bg-white hover:bg-yellow-200 z-10'
                 }
-                hover:scale-150 active:scale-125
+                hover:scale-125 md:hover:scale-150 active:scale-110 md:active:scale-125
               `}
               style={{
                 left: `${star.x}px`,
@@ -120,13 +136,41 @@ export const Galaxy: React.FC<GalaxyProps> = ({
 
       {/* Telescope viewport overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-64 h-64 border-4 border-white/30 rounded-full relative">
-          <div className="absolute inset-4 border-2 border-white/20 rounded-full" />
-          <div className="absolute inset-8 border border-white/10 rounded-full" />
+        <div 
+          className="border-4 border-white/30 rounded-full relative"
+          style={{
+            width: `${crosshairSize}px`,
+            height: `${crosshairSize}px`
+          }}
+        >
+          <div 
+            className="absolute border-2 border-white/20 rounded-full"
+            style={{
+              inset: `${crosshairSize * 0.0625}px` // 4px equivalent at 64px base size
+            }}
+          />
+          <div 
+            className="absolute border border-white/10 rounded-full"
+            style={{
+              inset: `${crosshairSize * 0.125}px` // 8px equivalent at 64px base size
+            }}
+          />
           
           {/* Crosshairs */}
-          <div className="absolute left-1/2 top-4 bottom-4 w-0.5 bg-white/20 transform -translate-x-0.5" />
-          <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-white/20 transform -translate-y-0.5" />
+          <div 
+            className="absolute left-1/2 w-0.5 bg-white/20 transform -translate-x-0.5"
+            style={{
+              top: `${crosshairSize * 0.0625}px`,
+              bottom: `${crosshairSize * 0.0625}px`
+            }}
+          />
+          <div 
+            className="absolute top-1/2 h-0.5 bg-white/20 transform -translate-y-0.5"
+            style={{
+              left: `${crosshairSize * 0.0625}px`,
+              right: `${crosshairSize * 0.0625}px`
+            }}
+          />
           
           {/* Center dot */}
           <div className="absolute left-1/2 top-1/2 w-2 h-2 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
@@ -134,4 +178,4 @@ export const Galaxy: React.FC<GalaxyProps> = ({
       </div>
     </div>
   );
-};
+});

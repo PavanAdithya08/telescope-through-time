@@ -52,7 +52,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
 
   if (isMinimized) {
     return (
-      <div className="fixed top-4 right-4 z-20">
+      <div className="fixed top-20 md:top-4 right-4 z-20">
         <button
           onClick={() => setIsMinimized(false)}
           className="p-3 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg hover:bg-slate-800/90 transition-all duration-300 hover:scale-105 shadow-lg"
@@ -65,7 +65,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
   }
 
   return (
-    <div className="fixed top-4 right-4 z-20 w-72 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 shadow-xl animate-in slide-in-from-right-5 fade-in duration-300">
+    <div className="fixed top-20 md:top-4 right-4 z-20 w-80 md:w-72 max-w-[calc(100vw-2rem)] bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 shadow-xl animate-in slide-in-from-right-5 fade-in duration-300">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <CalendarIcon className="w-4 h-4 text-blue-400" />
@@ -111,7 +111,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-0.5">
+      <div className="grid grid-cols-7 gap-0.5 mb-3">
         {getDaysArray().map((day, index) => {
           if (day === null) {
             return <div key={index} className="p-1.5" />;
@@ -124,7 +124,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
             <button
               key={day}
               onClick={() => onDateSelect(formatDateKey(day))}
-              className={`p-1.5 text-xs rounded transition-all duration-200 hover:scale-110
+              className={`p-1.5 text-xs rounded transition-all duration-200 hover:scale-105 md:hover:scale-110
                 ${isSelected 
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-400/30' 
                   : isTodayDate
@@ -140,7 +140,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
       </div>
 
       {/* Legend */}
-      <div className="mt-3 pt-3 border-t border-slate-700/50">
+      <div className="pt-3 border-t border-slate-700/50">
         <div className="flex items-center justify-between text-xs text-slate-400">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-blue-600 rounded-full"></div>

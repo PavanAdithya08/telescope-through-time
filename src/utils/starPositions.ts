@@ -1,12 +1,15 @@
 import { Star } from '../types/astronomy';
 
 // Generate positions for 365 stars in a spiral galaxy pattern
-export const generateStarPositions = (): Star[] => {
+export const generateStarPositions = (containerWidth: number = 800, containerHeight: number = 600): Star[] => {
   const stars: Star[] = [];
-  const centerX = 400;
-  const centerY = 300;
+  const centerX = containerWidth / 2;
+  const centerY = containerHeight / 2;
   const numArms = 5;
   const starsPerArm = 73; // 365 / 5 arms
+  
+  // Scale spiral size based on container dimensions
+  const maxRadius = Math.min(containerWidth, containerHeight) * 0.35;
   
   for (let arm = 0; arm < numArms; arm++) {
     for (let i = 0; i < starsPerArm; i++) {
@@ -23,11 +26,11 @@ export const generateStarPositions = (): Star[] => {
       const armAngle = (arm * 2 * Math.PI) / numArms;
       const t = i / starsPerArm;
       const spiralTightness = 2;
-      const radius = 50 + t * 200; // Spiral outward
+      const radius = maxRadius * 0.2 + t * maxRadius * 0.8; // Spiral outward from 20% to 100% of max radius
       const angle = armAngle + t * spiralTightness * Math.PI;
       
       // Add some randomness for natural look
-      const randomRadius = radius + (Math.random() - 0.5) * 30;
+      const randomRadius = radius + (Math.random() - 0.5) * (maxRadius * 0.1);
       const randomAngle = angle + (Math.random() - 0.5) * 0.3;
       
       const x = centerX + randomRadius * Math.cos(randomAngle);
@@ -58,10 +61,10 @@ export const generateStarPositions = (): Star[] => {
 };
 
 // Convert screen coordinates to telescope coordinates
-export const screenToTelescopeCoordinates = (x: number, y: number): { ra: string; dec: string } => {
+export const screenToTelescopeCoordinates = (x: number, y: number, containerWidth: number = 800, containerHeight: number = 600): { ra: string; dec: string } => {
   // Simulate coordinate conversion based on screen position
-  const ra = ((x / 800) * 24).toFixed(1);
-  const dec = (((y - 300) / 300) * 90).toFixed(1);
+  const ra = ((x / containerWidth) * 24).toFixed(1);
+  const dec = (((y - containerHeight / 2) / (containerHeight / 2)) * 90).toFixed(1);
   
   return {
     ra: `${ra}h`,

@@ -41,16 +41,16 @@ export const EventModal: React.FC<EventModalProps> = ({ events, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 md:p-4">
+      <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] md:max-h-[85vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-slate-700/50">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-600/20 border border-blue-400/30 rounded-lg">
               <Satellite className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white mb-1">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-1">
                 NASA Astronomical Data
               </h2>
               <p className="text-slate-300 text-sm">
@@ -67,7 +67,7 @@ export const EventModal: React.FC<EventModalProps> = ({ events, onClose }) => {
         </div>
 
         {/* Events List */}
-        <div className="p-6 overflow-y-auto max-h-[65vh]">
+        <div className="p-4 md:p-6 overflow-y-auto max-h-[70vh] md:max-h-[65vh]">
           {events.events.length === 0 ? (
             <div className="text-center py-12">
               <Satellite className="w-16 h-16 text-slate-400 mx-auto mb-4" />
@@ -79,17 +79,17 @@ export const EventModal: React.FC<EventModalProps> = ({ events, onClose }) => {
               {events.events.map((event, index) => (
                 <div
                   key={event.id}
-                  className="bg-gradient-to-r from-slate-800/40 to-slate-800/20 border border-slate-600/30 rounded-xl p-6 hover:from-slate-800/60 hover:to-slate-800/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
+                  className="bg-gradient-to-r from-slate-800/40 to-slate-800/20 border border-slate-600/30 rounded-xl p-4 md:p-6 hover:from-slate-800/60 hover:to-slate-800/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
                 >
-                  <div className="flex items-start gap-5">
+                  <div className="flex flex-col md:flex-row items-start gap-4 md:gap-5">
                     <div className="flex-shrink-0 p-3 bg-slate-700/50 border border-slate-600/50 rounded-xl">
                       {getEventIcon(event.type)}
                     </div>
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <h3 className="text-xl font-bold text-white">
+                        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 flex-wrap">
+                          <h3 className="text-lg md:text-xl font-bold text-white">
                             {event.name}
                           </h3>
                           <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getEventTypeColor(event.type)}`}>
@@ -98,7 +98,7 @@ export const EventModal: React.FC<EventModalProps> = ({ events, onClose }) => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-4 mb-4 text-sm">
+                      <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-4 text-sm">
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4 text-slate-400" />
                           <span className="text-slate-300">{event.constellation}</span>
@@ -137,7 +137,7 @@ export const EventModal: React.FC<EventModalProps> = ({ events, onClose }) => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <a
                           href={event.link}
                           target="_blank"
@@ -148,7 +148,7 @@ export const EventModal: React.FC<EventModalProps> = ({ events, onClose }) => {
                           Explore on NASA
                         </a>
                         
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-slate-500 text-center md:text-right">
                           Event #{index + 1} of {events.events.length}
                         </div>
                       </div>

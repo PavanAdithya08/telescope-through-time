@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Galaxy } from './components/Galaxy';
 import { DiscoveryPanel } from './components/DiscoveryPanel';
 import { Calendar } from './components/Calendar';
@@ -7,16 +7,19 @@ import { useGalaxyInteraction } from './hooks/useGalaxyInteraction';
 import { generateStarPositions } from './utils/starPositions';
 import { astronomyApi } from './services/astronomyApi';
 import { Star, FilterType, DayEvents } from './types/astronomy';
-import { Satellite, Wifi, WifiOff } from 'lucide-react';
+import { Satellite, Wifi, WifiOff, Menu, X } from 'lucide-react';
 
 function App() {
-  const [stars] = useState<Star[]>(() => generateStarPositions());
+  const galaxyContainerRef = useRef<HTMLDivElement>(null);
+  const [containerDimensions, setContainerDimensions] = useState({ width: 800, height: 600 });
+  const [stars, setStars] = useState<Star[]>([]);
   const [selectedStar, setSelectedStar] = useState<Star | null>(null);
   const [filter, setFilter] = useState<FilterType>('All');
   const [events, setEvents] = useState<DayEvents | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [apiStatus, setApiStatus] = useState<'connected' | 'disconnected' | 'loading'>('loading');
+  const [isDiscoveryPanelOpen, setIsDiscoveryPanelOpen] = useState(false);
 
   const {
     position,
@@ -27,7 +30,41 @@ function App() {
     handleMouseUp,
     setZoom,
     focusOnPosition
-  } = useGalaxyInteraction();
+  } = useGalaxyInteraction(containerDimensions.width, containerDimensions.height);
+
+  // Update container dimensions and regenerate stars when window resizes
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (galaxyContainerRef.current) {
+        const rect = galaxyContainerRef.current.getBoundingClientRect();
+        setContainerDimensions({ width: rect.width, height: rect.height });
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    if (galaxyContainerRef.current) {
+      resizeObserver.observe(galaxyContainerRef.current);
+    }
+
+    // Initial measurement
+    updateDimensions();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  // Regenerate stars when container dimensions change
+  useEffect(() => {
+    if (containerDimensions.width > 0 && containerDimensions.height > 0) {
+      setStars(generateStarPositions(containerDimensions.width, containerDimensions.height));
+    }
+  }, [containerDimensions]);
+
+  // Close discovery panel when clicking outside on mobile
+  const handleOutsideClick = () => {
+    if (window.innerWidth < 768) setIsDiscoveryPanelOpen(false);
+  };
 
   // Test NASA API connection on mount
   useEffect(() => {
@@ -80,7 +117,7 @@ function App() {
   };
 
   return (
-    <div className="h-screen bg-slate-900 flex overflow-hidden">
+    <div className="h-screen bg-slate-900 flex overflow-hidden relative">
       {/* Discovery Panel */}
       <DiscoveryPanel
         filter={filter}
@@ -88,35 +125,46 @@ function App() {
         zoom={position.zoom}
         onZoomChange={setZoom}
         coordinates={coordinates}
+        isOpen={isDiscoveryPanelOpen}
+        onToggle={() => setIsDiscoveryPanelOpen(!isDiscoveryPanelOpen)}
       />
 
       {/* Main Content */}
       <div className="flex-1 relative">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsDiscoveryPanelOpen(true)}
+          className="md:hidden fixed top-4 left-4 z-30 p-3 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg hover:bg-slate-800/90 transition-all duration-300"
+          title="Open Controls"
+        >
+          <Menu className="w-5 h-5 text-white" />
+        </button>
+
         {/* Top Bar */}
-        <div className="absolute top-4 left-4 z-10">
-          <div className="bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg px-4 py-3">
+        <div className="absolute top-4 left-4 md:left-4 z-10 ml-16 md:ml-0">
+          <div className="bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg px-3 md:px-4 py-2 md:py-3">
             <div className="flex items-center gap-3">
-              <Satellite className="w-6 h-6 text-blue-400" />
+              <Satellite className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
               <div>
-                <h1 className="text-xl font-bold text-white">
+                <h1 className="text-lg md:text-xl font-bold text-white">
                   Telescope Through Time
                 </h1>
                 <div className="flex items-center gap-2 mt-1">
                   {apiStatus === 'connected' && (
                     <>
-                      <Wifi className="w-3 h-3 text-green-400" />
+                      <Wifi className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-400" />
                       <span className="text-xs text-green-400">NASA API Connected</span>
                     </>
                   )}
                   {apiStatus === 'disconnected' && (
                     <>
-                      <WifiOff className="w-3 h-3 text-red-400" />
+                      <WifiOff className="w-2.5 h-2.5 md:w-3 md:h-3 text-red-400" />
                       <span className="text-xs text-red-400">NASA API Offline</span>
                     </>
                   )}
                   {apiStatus === 'loading' && (
                     <>
-                      <div className="w-3 h-3 border border-blue-400 border-t-transparent rounded-full animate-spin" />
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 border border-blue-400 border-t-transparent rounded-full animate-spin" />
                       <span className="text-xs text-blue-400">Connecting...</span>
                     </>
                   )}
@@ -135,7 +183,10 @@ function App() {
         {/* Galaxy View */}
         <div className="w-full h-full">
           <Galaxy
+            ref={galaxyContainerRef}
             stars={stars}
+            containerWidth={containerDimensions.width}
+            containerHeight={containerDimensions.height}
             position={position}
             selectedStar={selectedStar}
             filter={filter}
@@ -144,6 +195,7 @@ function App() {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             isDragging={isDragging}
+            onClick={handleOutsideClick}
           />
         </div>
 
@@ -161,7 +213,7 @@ function App() {
         )}
 
         {/* Instructions */}
-        <div className="absolute bottom-4 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm">
+        <div className="hidden lg:block absolute bottom-4 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm">
           <div className="flex items-center gap-2 mb-3">
             <Satellite className="w-4 h-4 text-blue-400" />
             <h3 className="text-sm font-semibold text-white">NASA-Powered Guide</h3>

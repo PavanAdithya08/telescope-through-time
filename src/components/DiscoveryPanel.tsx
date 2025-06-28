@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Telescope, Star, Globe, Home as Comet, Rocket, ZoomIn, ZoomOut } from 'lucide-react';
+import { Search, Telescope, Star, Globe, Home as Comet, Rocket, ZoomIn, ZoomOut, X } from 'lucide-react';
 import { FilterType, Coordinates } from '../types/astronomy';
 
 interface DiscoveryPanelProps {
@@ -8,6 +8,8 @@ interface DiscoveryPanelProps {
   zoom: number;
   onZoomChange: (zoom: number) => void;
   coordinates: Coordinates;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
 export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
@@ -15,7 +17,9 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
   onFilterChange,
   zoom,
   onZoomChange,
-  coordinates
+  coordinates,
+  isOpen,
+  onToggle
 }) => {
   const filters: { type: FilterType; icon: React.ReactNode; label: string; color: string }[] = [
     { type: 'All', icon: <Search className="w-3 h-3" />, label: 'All', color: 'text-white' },
@@ -28,7 +32,33 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
   const zoomLevels = [1.0, 2.0, 3.0, 4.0, 5.0]; // Updated zoom levels starting from 1x to 5x
 
   return (
-    <div className="w-64 h-full bg-slate-900/90 backdrop-blur-sm border-r border-slate-700/50 p-4 flex flex-col">
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          onClick={onToggle}
+        />
+      )}
+      
+      {/* Discovery Panel */}
+      <div className={`
+        fixed md:relative inset-y-0 left-0 z-50 md:z-auto
+        w-80 md:w-64 h-full
+        bg-slate-900/95 md:bg-slate-900/90 backdrop-blur-sm
+        border-r border-slate-700/50
+        p-4 flex flex-col
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        {/* Mobile Close Button */}
+        <button
+          onClick={onToggle}
+          className="md:hidden absolute top-4 right-4 p-2 bg-slate-800/50 border border-slate-600/50 rounded-lg hover:bg-slate-700/50 transition-colors"
+        >
+          <X className="w-4 h-4 text-white" />
+        </button>
+
       <div className="flex items-center gap-2 mb-6">
         <Telescope className="w-6 h-6 text-blue-400" />
         <h2 className="text-lg font-bold text-white">Discovery</h2>
@@ -41,7 +71,10 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
           {filters.map(({ type, icon, label, color }) => (
             <button
               key={type}
-              onClick={() => onFilterChange(type)}
+              onClick={() => {
+                onFilterChange(type);
+                if (window.innerWidth < 768) onToggle();
+              }}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-all duration-200
                 ${filter === type 
                   ? 'bg-blue-600/30 border border-blue-400/50 shadow-sm' 
@@ -129,6 +162,7 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
           </ul>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
