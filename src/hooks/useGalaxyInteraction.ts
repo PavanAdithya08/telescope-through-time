@@ -30,7 +30,6 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
     setCoordinates(newCoords);
 
     dragStartRef.current = { x: e.clientX, y: e.clientY };
-  }, [isDragging]);
   }, [isDragging, containerWidth, containerHeight]);
 
   const handleMouseUp = useCallback(() => {
