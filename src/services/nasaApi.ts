@@ -234,9 +234,7 @@ class NASAApiService {
         const apod = await this.getAPOD(fullDate);
         events.push(this.convertAPODToEvent(apod, date));
       } catch (error) {
-        console.log('APOD not available for date, using current APOD');
-        const currentAPOD = await this.getAPOD();
-        events.push(this.convertAPODToEvent(currentAPOD, date));
+        console.log('APOD not available for this specific date, skipping APOD event');
       }
 
       // Get Near-Earth Objects for the date
