@@ -155,8 +155,8 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onEnterTelescope }) => {
               <span>Powered by NASA Open Data Portal</span>
             </div>
             <div className="text-center">
-              <div className="text-white text-sm font-medium">Made by Pavan</div>
-              <div className="text-slate-400 text-xs">Harish</div>
+              <div className="text-white text-sm font-medium">Made by Pavan,</div>
+              <div className="text-white text-sm font-bold">Harish</div>
             </div>
           </div>
           <div className="text-slate-400 text-sm text-center md:text-right">
