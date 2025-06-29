@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Galaxy } from './components/Galaxy';
 import { DiscoveryPanel } from './components/DiscoveryPanel';
+import { TelescopeViewer } from './components/TelescopeViewer';
+import { HoverDataPanel } from './components/HoverDataPanel';
 import { Calendar } from './components/Calendar';
 import { EventModal } from './components/EventModal';
 import { useGalaxyInteraction } from './hooks/useGalaxyInteraction';
+import { useStarHover } from './hooks/useStarHover';
 import { generateStarPositions } from './utils/starPositions';
 import { astronomyApi } from './services/astronomyApi';
 import { Star, FilterType, DayEvents } from './types/astronomy';
@@ -31,6 +34,16 @@ function App() {
     setZoom,
     focusOnPosition
   } = useGalaxyInteraction(containerDimensions.width, containerDimensions.height);
+
+  const {
+    hoveredStar,
+    hoverEvent,
+    isLoading: isHoverLoading,
+    hoverPosition,
+    checkStarHover,
+    clearHover,
+    forceClose
+  } = useStarHover();
 
   // Update container dimensions and regenerate stars when window resizes
   useEffect(() => {
@@ -82,7 +95,24 @@ function App() {
     testConnection();
   }, []);
 
+  // Enhanced mouse move handler that includes hover detection
+  const handleEnhancedMouseMove = (e: React.MouseEvent) => {
+    handleMouseMove(e);
+    
+    if (!isDragging && stars.length > 0) {
+      const rect = galaxyContainerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        checkStarHover(mouseX, mouseY, containerDimensions.width, containerDimensions.height, stars, position);
+      }
+    }
+  };
+
   const handleStarClick = async (star: Star) => {
+    // Clear hover state when clicking
+    forceClose();
+    
     setSelectedStar(star);
     setSelectedDate(star.date);
     setIsLoading(true);
@@ -114,6 +144,7 @@ function App() {
   const handleCloseModal = () => {
     setEvents(null);
     setSelectedStar(null);
+    clearHover();
   };
 
   return (
@@ -192,20 +223,41 @@ function App() {
             filter={filter}
             onStarClick={handleStarClick}
             onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
+            onMouseMove={handleEnhancedMouseMove}
             onMouseUp={handleMouseUp}
             isDragging={isDragging}
+            hoveredStar={hoveredStar}
             onClick={handleOutsideClick}
           />
         </div>
 
+        {/* Telescope Viewer */}
+        <TelescopeViewer
+          isActive={true}
+          isHovering={!!hoveredStar}
+          targetStar={hoveredStar?.id || null}
+          zoom={position.zoom}
+          onZoomChange={setZoom}
+          coordinates={coordinates}
+        />
+
+        {/* Hover Data Panel */}
+        <HoverDataPanel
+          event={hoverEvent}
+          isVisible={!!hoverEvent && !events}
+          position={hoverPosition}
+          onClose={forceClose}
+        />
+
         {/* Loading Indicator */}
-        {isLoading && (
+        {(isLoading || isHoverLoading) && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg px-6 py-3">
             <div className="flex items-center gap-3">
               <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
               <div>
-                <div className="text-white font-medium">Loading NASA Data</div>
+                <div className="text-white font-medium">
+                  {isHoverLoading ? 'Scanning Target' : 'Loading NASA Data'}
+                </div>
                 <div className="text-xs text-slate-400">Fetching real astronomical events...</div>
               </div>
             </div>
