@@ -68,7 +68,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onEnterTelescope }) => {
           
           <p className="text-lg md:text-xl text-slate-300 mb-6 leading-relaxed">
             Journey through the cosmos with our interactive astronomical calendar. 
-            Discover real NASA events for every day of 2025 through a virtual telescope interface.
+            Discover real NASA events for every day of the year through a virtual telescope interface.
           </p>
           
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400 mb-8">
