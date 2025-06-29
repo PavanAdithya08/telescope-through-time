@@ -1,4 +1,4 @@
-import React, { useMemo, forwardRef } from 'react';
+import React, { useMemo, forwardRef, useEffect, useRef } from 'react';
 import { Star, FilterType } from '../types/astronomy';
 
 interface GalaxyProps {
@@ -14,6 +14,7 @@ interface GalaxyProps {
   onMouseUp: () => void;
   isDragging: boolean;
   onClick?: () => void;
+  onCenterStarChange?: (star: Star | null) => void;
 }
 
 export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
@@ -28,8 +29,11 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
   onMouseMove,
   onMouseUp,
   isDragging,
-  onClick
+  onClick,
+  onCenterStarChange
 }, ref) => {
+  const centerDetectionRef = useRef<NodeJS.Timeout>();
+
   const filteredStars = useMemo(() => {
     if (filter === 'All') return stars;
     return stars.filter(star => {
@@ -45,12 +49,56 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
     });
   }, [stars, filter]);
 
-  // Calculate telescope eyepiece dimensions
+  // Calculate aperture dimensions
   const centerX = containerWidth / 2;
   const centerY = containerHeight / 2;
-  const eyepieceRadius = Math.min(containerWidth, containerHeight) * 0.35;
-  const lensRadius = eyepieceRadius * 0.9;
-  const viewRadius = eyepieceRadius * 0.75;
+  const apertureRadius = Math.min(containerWidth, containerHeight) * 0.35;
+
+  // Detect star at center of crosshairs
+  useEffect(() => {
+    if (!onCenterStarChange) return;
+
+    // Clear previous timeout
+    if (centerDetectionRef.current) {
+      clearTimeout(centerDetectionRef.current);
+    }
+
+    // Debounce center detection to avoid excessive calls
+    centerDetectionRef.current = setTimeout(() => {
+      const centerThreshold = 30; // Pixels from center to consider "centered"
+      
+      // Calculate the actual center position in the star coordinate system
+      const actualCenterX = centerX - position.x;
+      const actualCenterY = centerY - position.y;
+      
+      // Find star closest to center
+      let closestStar: Star | null = null;
+      let closestDistance = Infinity;
+      
+      filteredStars.forEach(star => {
+        const scaledX = star.x * position.zoom;
+        const scaledY = star.y * position.zoom;
+        
+        const distance = Math.sqrt(
+          Math.pow(scaledX - actualCenterX, 2) + 
+          Math.pow(scaledY - actualCenterY, 2)
+        );
+        
+        if (distance < centerThreshold && distance < closestDistance) {
+          closestDistance = distance;
+          closestStar = star;
+        }
+      });
+      
+      onCenterStarChange(closestStar);
+    }, 300); // 300ms debounce
+
+    return () => {
+      if (centerDetectionRef.current) {
+        clearTimeout(centerDetectionRef.current);
+      }
+    };
+  }, [position, filteredStars, centerX, centerY, onCenterStarChange]);
 
   return (
     <div 
@@ -58,93 +106,20 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
       className="relative w-full h-full overflow-hidden bg-black"
       onClick={onClick}
     >
-      {/* Telescope Eyepiece Structure */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {/* Outer telescope rim */}
-        <div 
-          className="absolute rounded-full"
-          style={{
-            width: `${eyepieceRadius * 2.4}px`,
-            height: `${eyepieceRadius * 2.4}px`,
-            background: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 25%, #3a3a3a 50%, #1a1a1a 75%, #2a2a2a 100%)',
-            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6)'
-          }}
-        />
-        
-        {/* Secondary rim */}
-        <div 
-          className="absolute rounded-full"
-          style={{
-            width: `${eyepieceRadius * 2.2}px`,
-            height: `${eyepieceRadius * 2.2}px`,
-            background: 'linear-gradient(45deg, #4a4a4a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 0 15px rgba(0,0,0,0.7)'
-          }}
-        />
-        
-        {/* Lens housing */}
-        <div 
-          className="absolute rounded-full"
-          style={{
-            width: `${eyepieceRadius * 2}px`,
-            height: `${eyepieceRadius * 2}px`,
-            background: 'linear-gradient(135deg, #6a6a6a 0%, #3a3a3a 25%, #5a5a5a 50%, #2a2a2a 75%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 0 10px rgba(0,0,0,0.6), 0 0 20px rgba(0,0,0,0.4)'
-          }}
-        />
-        
-        {/* Outer lens element */}
-        <div 
-          className="absolute rounded-full"
-          style={{
-            width: `${lensRadius * 2}px`,
-            height: `${lensRadius * 2}px`,
-            background: 'linear-gradient(45deg, rgba(100,150,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(100,150,255,0.1) 100%)',
-            border: '2px solid rgba(255,255,255,0.1)',
-            boxShadow: 'inset 0 0 20px rgba(100,150,255,0.1), 0 0 10px rgba(255,255,255,0.1)'
-          }}
-        />
-        
-        {/* Inner lens element */}
-        <div 
-          className="absolute rounded-full"
-          style={{
-            width: `${viewRadius * 2.1}px`,
-            height: `${viewRadius * 2.1}px`,
-            background: 'linear-gradient(135deg, rgba(200,220,255,0.08) 0%, rgba(255,255,255,0.03) 50%, rgba(200,220,255,0.08) 100%)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: 'inset 0 0 15px rgba(200,220,255,0.1)'
-          }}
-        />
-
-        {/* Telescope eyepiece top indicator */}
-        <div 
-          className="absolute rounded-full"
-          style={{
-            width: '12px',
-            height: '12px',
-            top: `${centerY - eyepieceRadius * 1.3}px`,
-            left: `${centerX - 6}px`,
-            background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
-            boxShadow: '0 2px 8px rgba(251, 191, 36, 0.4), inset 0 1px 2px rgba(255,255,255,0.3)'
-          }}
-        />
-      </div>
-
-      {/* Telescope view area with clipping */}
+      {/* Aperture mask - creates the circular telescope view */}
       <div 
         className="absolute flex items-center justify-center"
         style={{
           left: `${centerX}px`,
           top: `${centerY}px`,
           transform: 'translate(-50%, -50%)',
-          width: `${viewRadius * 2}px`,
-          height: `${viewRadius * 2}px`,
-          clipPath: `circle(${viewRadius}px)`,
+          width: `${apertureRadius * 2}px`,
+          height: `${apertureRadius * 2}px`,
+          clipPath: `circle(${apertureRadius}px)`,
           overflow: 'hidden'
         }}
       >
-        {/* Star field background */}
+        {/* Starfield background visible through aperture */}
         <div 
           className="relative"
           style={{
@@ -154,40 +129,74 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
             background: 'radial-gradient(ellipse at center, #0f172a 0%, #020617 70%, #000000 100%)'
           }}
         >
-          {/* Background stars */}
-          <div className="absolute inset-0 opacity-40">
-            {Array.from({ length: Math.floor((containerWidth * containerHeight) / 3000) }).map((_, i) => (
+          {/* Dense background star field */}
+          <div className="absolute inset-0 opacity-60">
+            {Array.from({ length: Math.floor((containerWidth * containerHeight) / 2000) }).map((_, i) => {
+              const x = Math.random() * 100;
+              const y = Math.random() * 100;
+              const size = Math.random() * 1.5 + 0.5;
+              const opacity = Math.random() * 0.8 + 0.2;
+              const animationDelay = Math.random() * 5;
+              
+              return (
+                <div
+                  key={`bg-star-${i}`}
+                  className="absolute bg-white rounded-full animate-pulse"
+                  style={{
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    opacity,
+                    animationDelay: `${animationDelay}s`,
+                    animationDuration: `${2 + Math.random() * 3}s`
+                  }}
+                />
+              );
+            })}
+          </div>
+
+          {/* Nebula-like galaxy center glow */}
+          <div
+            className="absolute bg-gradient-radial from-purple-400/20 via-blue-500/10 via-orange-500/5 to-transparent rounded-full animate-pulse"
+            style={{
+              width: `${Math.min(containerWidth, containerHeight) * 0.3}px`,
+              height: `${Math.min(containerWidth, containerHeight) * 0.3}px`,
+              left: `${containerWidth / 2}px`,
+              top: `${containerHeight / 2}px`,
+              transform: 'translate(-50%, -50%)',
+              animationDuration: '8s'
+            }}
+          />
+
+          {/* Distant galaxy spiral arms */}
+          <div className="absolute inset-0 opacity-20">
+            {Array.from({ length: 5 }).map((_, armIndex) => (
               <div
-                key={`bg-star-${i}`}
-                className="absolute w-0.5 h-0.5 bg-white rounded-full animate-pulse"
+                key={`spiral-arm-${armIndex}`}
+                className="absolute"
                 style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 3}s`
+                  left: `${containerWidth / 2}px`,
+                  top: `${containerHeight / 2}px`,
+                  width: '2px',
+                  height: `${Math.min(containerWidth, containerHeight) * 0.4}px`,
+                  background: 'linear-gradient(to bottom, rgba(147, 197, 253, 0.3), transparent)',
+                  transformOrigin: 'top center',
+                  transform: `rotate(${armIndex * 72}deg) translate(-50%, 0)`,
+                  borderRadius: '1px'
                 }}
               />
             ))}
           </div>
 
-          {/* Galaxy center glow */}
+          {/* Interactive main stars with smooth transformations */}
           <div
-            className="absolute bg-gradient-radial from-yellow-400/15 via-orange-500/8 to-transparent rounded-full"
-            style={{
-              width: `${Math.min(containerWidth, containerHeight) * 0.15}px`,
-              height: `${Math.min(containerWidth, containerHeight) * 0.15}px`,
-              left: `${containerWidth / 2}px`,
-              top: `${containerHeight / 2}px`,
-              transform: 'translate(-50%, -50%)'
-            }}
-          />
-
-          {/* Interactive stars with galaxy transformations */}
-          <div
-            className={`relative w-full h-full transition-transform duration-300 ${
+            className={`relative w-full h-full transition-transform duration-500 ease-out ${
               isDragging ? 'cursor-grabbing' : 'cursor-grab'
             }`}
             style={{
-              transform: `translate(${position.x}px, ${position.y}px) scale(${position.zoom})`
+              transform: `translate(${position.x}px, ${position.y}px) scale(${position.zoom})`,
+              willChange: 'transform'
             }}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
@@ -196,19 +205,18 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
           >
             {filteredStars.map((star) => {
               const isSelected = selectedStar?.id === star.id;
-              const baseSize = 2 + star.brightness * 3;
+              const baseSize = 2 + star.brightness * 4;
               
               return (
                 <div
                   key={star.id}
-                  className={`absolute rounded-full transition-all duration-300 cursor-pointer touch-manipulation
+                  className={`absolute rounded-full transition-all duration-500 cursor-pointer touch-manipulation transform-gpu
                     ${isSelected 
-                      ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50 animate-pulse z-20' 
+                      ? 'bg-yellow-400 shadow-lg shadow-yellow-400/60 animate-pulse z-20 scale-150' 
                       : star.hasEvents 
-                        ? 'bg-blue-400 hover:bg-blue-300 hover:shadow-lg hover:shadow-blue-400/50 z-10' 
-                        : 'bg-white hover:bg-yellow-200 z-10'
+                        ? 'bg-blue-400 hover:bg-blue-300 hover:shadow-lg hover:shadow-blue-400/50 z-10 hover:scale-125' 
+                        : 'bg-white hover:bg-yellow-200 z-10 hover:scale-110'
                     }
-                    hover:scale-125 md:hover:scale-150 active:scale-110 md:active:scale-125
                   `}
                   style={{
                     left: `${star.x}px`,
@@ -217,10 +225,11 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
                     height: `${baseSize}px`,
                     opacity: star.brightness,
                     boxShadow: isSelected 
-                      ? '0 0 20px rgba(255, 255, 0, 0.8), 0 0 40px rgba(255, 255, 0, 0.4)' 
+                      ? '0 0 25px rgba(255, 255, 0, 0.9), 0 0 50px rgba(255, 255, 0, 0.5), 0 0 75px rgba(255, 255, 0, 0.3)' 
                       : star.hasEvents 
-                        ? '0 0 10px rgba(59, 130, 246, 0.6)'
-                        : 'none'
+                        ? '0 0 15px rgba(59, 130, 246, 0.7), 0 0 30px rgba(59, 130, 246, 0.3)'
+                        : 'none',
+                    willChange: 'transform, opacity'
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -234,67 +243,106 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
         </div>
       </div>
 
-      {/* Telescope crosshairs overlay */}
+      {/* Aperture frame with realistic telescope optics */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {/* Outer aperture ring */}
+        <div 
+          className="absolute rounded-full border-4 border-gray-600/80"
+          style={{
+            width: `${apertureRadius * 2.1}px`,
+            height: `${apertureRadius * 2.1}px`,
+            boxShadow: 'inset 0 0 30px rgba(0,0,0,0.8), 0 0 50px rgba(0,0,0,0.9)'
+          }}
+        />
+        
+        {/* Inner lens ring */}
+        <div 
+          className="absolute rounded-full border-2 border-gray-400/60"
+          style={{
+            width: `${apertureRadius * 2.05}px`,
+            height: `${apertureRadius * 2.05}px`,
+            boxShadow: 'inset 0 0 20px rgba(100,150,255,0.2)'
+          }}
+        />
+      </div>
+
+      {/* Professional crosshairs overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div 
           className="relative"
           style={{
-            width: `${viewRadius * 2}px`,
-            height: `${viewRadius * 2}px`
+            width: `${apertureRadius * 2}px`,
+            height: `${apertureRadius * 2}px`
           }}
         >
-          {/* Vertical crosshair */}
+          {/* Main crosshairs */}
           <div 
-            className="absolute left-1/2 w-0.5 bg-red-400/60 transform -translate-x-0.5"
+            className="absolute left-1/2 w-0.5 bg-red-400/80 transform -translate-x-0.5 animate-pulse"
             style={{
-              top: `${viewRadius * 0.1}px`,
-              bottom: `${viewRadius * 0.1}px`
+              top: `${apertureRadius * 0.2}px`,
+              bottom: `${apertureRadius * 0.2}px`
             }}
           />
-          {/* Horizontal crosshair */}
           <div 
-            className="absolute top-1/2 h-0.5 bg-red-400/60 transform -translate-y-0.5"
+            className="absolute top-1/2 h-0.5 bg-red-400/80 transform -translate-y-0.5 animate-pulse"
             style={{
-              left: `${viewRadius * 0.1}px`,
-              right: `${viewRadius * 0.1}px`
+              left: `${apertureRadius * 0.2}px`,
+              right: `${apertureRadius * 0.2}px`
             }}
           />
           
-          {/* Center dot */}
-          <div className="absolute left-1/2 top-1/2 w-2 h-2 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+          {/* Center targeting dot */}
+          <div className="absolute left-1/2 top-1/2 w-3 h-3 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse" 
+               style={{ animationDuration: '2s' }} />
           
-          {/* Reticle circles */}
+          {/* Range finder circles */}
           <div 
-            className="absolute border border-white/20 rounded-full"
+            className="absolute border border-white/30 rounded-full animate-pulse"
             style={{
-              width: `${viewRadius * 0.6}px`,
-              height: `${viewRadius * 0.6}px`,
-              left: `${viewRadius * 0.7}px`,
-              top: `${viewRadius * 0.7}px`
+              width: `${apertureRadius * 0.8}px`,
+              height: `${apertureRadius * 0.8}px`,
+              left: `${apertureRadius * 0.6}px`,
+              top: `${apertureRadius * 0.6}px`,
+              animationDuration: '3s'
             }}
           />
           <div 
-            className="absolute border border-white/10 rounded-full"
+            className="absolute border border-white/20 rounded-full animate-pulse"
             style={{
-              width: `${viewRadius * 1.2}px`,
-              height: `${viewRadius * 1.2}px`,
-              left: `${viewRadius * 0.4}px`,
-              top: `${viewRadius * 0.4}px`
+              width: `${apertureRadius * 1.4}px`,
+              height: `${apertureRadius * 1.4}px`,
+              left: `${apertureRadius * 0.3}px`,
+              top: `${apertureRadius * 0.3}px`,
+              animationDuration: '4s'
             }}
           />
+          
+          {/* Corner alignment marks */}
+          {[0, 90, 180, 270].map((rotation) => (
+            <div
+              key={rotation}
+              className="absolute w-6 h-0.5 bg-green-400/60"
+              style={{
+                left: `${apertureRadius - 3}px`,
+                top: `${apertureRadius * 0.3}px`,
+                transformOrigin: `3px ${apertureRadius * 0.7}px`,
+                transform: `rotate(${rotation}deg)`
+              }}
+            />
+          ))}
         </div>
       </div>
 
-      {/* Vignetting effect */}
+      {/* Sophisticated vignetting effect */}
       <div 
         className="absolute pointer-events-none"
         style={{
           left: `${centerX}px`,
           top: `${centerY}px`,
           transform: 'translate(-50%, -50%)',
-          width: `${viewRadius * 2.4}px`,
-          height: `${viewRadius * 2.4}px`,
-          background: `radial-gradient(circle, transparent ${viewRadius * 0.8}px, rgba(0,0,0,0.3) ${viewRadius * 0.9}px, rgba(0,0,0,0.7) ${viewRadius * 1.1}px, black ${viewRadius * 1.2}px)`,
+          width: `${apertureRadius * 2.6}px`,
+          height: `${apertureRadius * 2.6}px`,
+          background: `radial-gradient(circle, transparent ${apertureRadius * 0.9}px, rgba(0,0,0,0.2) ${apertureRadius * 1.0}px, rgba(0,0,0,0.6) ${apertureRadius * 1.15}px, rgba(0,0,0,0.9) ${apertureRadius * 1.25}px, black ${apertureRadius * 1.3}px)`,
           borderRadius: '50%'
         }}
       />

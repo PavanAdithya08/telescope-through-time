@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, Telescope, Star, Globe, Home as Comet, Rocket, ZoomIn, ZoomOut, X } from 'lucide-react';
-import { FilterType, Coordinates } from '../types/astronomy';
+import { FilterType, Coordinates, Star as StarType } from '../types/astronomy';
 
 interface DiscoveryPanelProps {
   filter: FilterType;
@@ -10,6 +10,7 @@ interface DiscoveryPanelProps {
   coordinates: Coordinates;
   isOpen: boolean;
   onToggle: () => void;
+  centerStar?: StarType | null;
 }
 
 export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
@@ -19,7 +20,8 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
   onZoomChange,
   coordinates,
   isOpen,
-  onToggle
+  onToggle,
+  centerStar
 }) => {
   const filters: { type: FilterType; icon: React.ReactNode; label: string; color: string }[] = [
     { type: 'All', icon: <Search className="w-3 h-3" />, label: 'All', color: 'text-white' },
@@ -64,6 +66,20 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
           <h2 className="text-lg font-bold text-white">Telescope Controls</h2>
       </div>
 
+      {/* Center Star Status */}
+      {centerStar && (
+        <div className="mb-4 p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+            <span className="text-blue-300 text-sm font-medium">Target Acquired</span>
+          </div>
+          <div className="text-xs text-slate-300">
+            <div>Date: {centerStar.date}</div>
+            <div>Constellation: {centerStar.constellation}</div>
+            <div className="text-blue-400 mt-1">Auto-loading data...</div>
+          </div>
+        </div>
+      )}
       {/* Category Filters */}
       <div className="mb-6">
         <h3 className="text-sm font-semibold text-white mb-3">Filters</h3>
@@ -155,11 +171,14 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
         <div className="bg-slate-800/20 border border-slate-600/20 rounded-md p-3">
           <h4 className="text-xs font-semibold text-white mb-2">Telescope Guide</h4>
           <ul className="text-xs text-slate-300 space-y-0.5">
+            <li>• Drag to explore starfield</li>
+            <li>• Center crosshairs on stars</li>
+            <li>• Data auto-loads when centered</li>
             <li>• Drag inside eyepiece to pan</li>
             <li>• Click stars for NASA data</li>
             <li>• Use filters for objects</li>
             <li>• Blue stars have events</li>
-            <li>• Red crosshairs mark center</li>
+            <li>• Red crosshairs target stars</li>
           </ul>
         </div>
       </div>

@@ -14,12 +14,14 @@ function App() {
   const [containerDimensions, setContainerDimensions] = useState({ width: 800, height: 600 });
   const [stars, setStars] = useState<Star[]>([]);
   const [selectedStar, setSelectedStar] = useState<Star | null>(null);
+  const [centerStar, setCenterStar] = useState<Star | null>(null);
   const [filter, setFilter] = useState<FilterType>('All');
   const [events, setEvents] = useState<DayEvents | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [apiStatus, setApiStatus] = useState<'connected' | 'disconnected' | 'loading'>('loading');
   const [isDiscoveryPanelOpen, setIsDiscoveryPanelOpen] = useState(false);
+  const [autoLoadTimeout, setAutoLoadTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const {
     position,
@@ -82,6 +84,33 @@ function App() {
     testConnection();
   }, []);
 
+  // Handle automatic star data loading when crosshairs center on a star
+  const handleCenterStarChange = (star: Star | null) => {
+    setCenterStar(star);
+    
+    // Clear previous timeout
+    if (autoLoadTimeout) {
+      clearTimeout(autoLoadTimeout);
+      setAutoLoadTimeout(null);
+    }
+    
+    if (star) {
+      // Auto-load data after star is centered for 1 second
+      const timeout = setTimeout(() => {
+        handleStarClick(star);
+      }, 1000);
+      setAutoLoadTimeout(timeout);
+    }
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoLoadTimeout) {
+        clearTimeout(autoLoadTimeout);
+      }
+    };
+  }, [autoLoadTimeout]);
   const handleStarClick = async (star: Star) => {
     setSelectedStar(star);
     setSelectedDate(star.date);
@@ -127,6 +156,7 @@ function App() {
         coordinates={coordinates}
         isOpen={isDiscoveryPanelOpen}
         onToggle={() => setIsDiscoveryPanelOpen(!isDiscoveryPanelOpen)}
+        centerStar={centerStar}
       />
 
       {/* Main Content */}
@@ -196,10 +226,22 @@ function App() {
             onMouseUp={handleMouseUp}
             isDragging={isDragging}
             onClick={handleOutsideClick}
+            onCenterStarChange={handleCenterStarChange}
           />
         </div>
 
         {/* Loading Indicator */}
+        {centerStar && !selectedStar && (
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-900/90 backdrop-blur-sm border border-blue-500/50 rounded-lg px-6 py-3">
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+              <div>
+                <div className="text-white font-medium">Star Centered</div>
+                <div className="text-xs text-blue-300">Loading data for {centerStar.date}...</div>
+              </div>
+            </div>
+          </div>
+        )}
         {isLoading && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-slate-600/50 rounded-lg px-6 py-3">
             <div className="flex items-center gap-3">
