@@ -24,8 +24,8 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
   const filters: { type: FilterType; icon: React.ReactNode; label: string; color: string }[] = [
     { type: 'All', icon: <Search className="w-3 h-3" />, label: 'All', color: 'text-white' },
     { type: 'Star', icon: <Star className="w-3 h-3" />, label: 'Stars', color: 'text-yellow-400' },
-    { type: 'Planet', icon: <Globe className="w-3 h-3" />, label: 'Planets', color: 'text-amber-400' },
-    { type: 'Comet', icon: <Comet className="w-3 h-3" />, label: 'Comets', color: 'text-emerald-400' },
+    { type: 'Planet', icon: <Globe className="w-3 h-3" />, label: 'Planets', color: 'text-blue-400' },
+    { type: 'Comet', icon: <Comet className="w-3 h-3" />, label: 'Comets', color: 'text-green-400' },
     { type: 'Mission', icon: <Rocket className="w-3 h-3" />, label: 'Missions', color: 'text-purple-400' }
   ];
 
@@ -61,7 +61,7 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
 
       <div className="flex items-center gap-2 mb-6">
         <Telescope className="w-6 h-6 text-blue-400" />
-        <h2 className="text-lg font-bold text-white">Timeline Controls</h2>
+        <h2 className="text-lg font-bold text-white">Discovery</h2>
       </div>
 
       {/* Category Filters */}
@@ -152,14 +152,13 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
 
       {/* Instructions */}
       <div className="mt-auto">
-        <div className="bg-slate-800/30 border border-slate-600/30 rounded-md p-3">
-          <h4 className="text-xs font-semibold text-white mb-2">Timeline Guide</h4>
+        <div className="bg-slate-800/20 border border-slate-600/20 rounded-md p-3">
+          <h4 className="text-xs font-semibold text-white mb-2">Guide</h4>
           <ul className="text-xs text-slate-300 space-y-0.5">
-            <li>• Scroll timeline vertically</li>
-            <li>• Click events for details</li>
-            <li>• Filter by event types</li>
-            <li>• ⭐ = Rare events</li>
-            <li>• 🌟 = Major events</li>
+            <li>• Drag to pan galaxy</li>
+            <li>• Click stars for events</li>
+            <li>• Use filters to highlight</li>
+            <li>• Blue stars have events</li>
           </ul>
         </div>
       </div>
