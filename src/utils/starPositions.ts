@@ -39,6 +39,15 @@ export const generateStarPositions = (containerWidth: number = 800, containerHei
       // Vary brightness based on position and randomness
       const brightness = 0.3 + Math.random() * 0.7;
       
+      // Assign object types based on position and randomness for variety
+      const getObjectType = (index: number): 'Star' | 'Planet' | 'Comet' | 'Mission' => {
+        const rand = (index * 7 + starIndex * 3) % 100; // Deterministic but varied
+        if (rand < 50) return 'Star';
+        if (rand < 70) return 'Planet';
+        if (rand < 85) return 'Comet';
+        return 'Mission';
+      };
+      
       const constellations = [
         'Andromeda', 'Aquarius', 'Aries', 'Cancer', 'Capricornus', 'Gemini',
         'Leo', 'Libra', 'Pisces', 'Sagittarius', 'Scorpius', 'Taurus', 'Virgo',
@@ -52,7 +61,8 @@ export const generateStarPositions = (containerWidth: number = 800, containerHei
         y,
         brightness,
         constellation: constellations[Math.floor(Math.random() * constellations.length)],
-        hasEvents: true // All stars now have events since we have daily data
+        hasEvents: true, // All stars now have events since we have daily data
+        objectType: getObjectType(i)
       });
     }
   }

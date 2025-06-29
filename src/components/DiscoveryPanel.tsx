@@ -24,8 +24,8 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
   const filters: { type: FilterType; icon: React.ReactNode; label: string; color: string }[] = [
     { type: 'All', icon: <Search className="w-3 h-3" />, label: 'All', color: 'text-white' },
     { type: 'Star', icon: <Star className="w-3 h-3" />, label: 'Stars', color: 'text-yellow-400' },
-    { type: 'Planet', icon: <Globe className="w-3 h-3" />, label: 'Planets', color: 'text-blue-400' },
-    { type: 'Comet', icon: <Comet className="w-3 h-3" />, label: 'Comets', color: 'text-green-400' },
+    { type: 'Planet', icon: <Globe className="w-3 h-3" />, label: 'Planets', color: 'text-amber-400' },
+    { type: 'Comet', icon: <Comet className="w-3 h-3" />, label: 'Comets', color: 'text-emerald-400' },
     { type: 'Mission', icon: <Rocket className="w-3 h-3" />, label: 'Missions', color: 'text-purple-400' }
   ];
 
