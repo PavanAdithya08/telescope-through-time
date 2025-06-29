@@ -130,21 +130,18 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
           }}
         >
           {/* Dense background star field */}
-          <div className="absolute inset-0 opacity-80">
-            {Array.from({ length: Math.floor((containerWidth * containerHeight) / 1500) }).map((_, i) => {
+          <div className="absolute inset-0 opacity-60">
+            {Array.from({ length: Math.floor((containerWidth * containerHeight) / 2000) }).map((_, i) => {
               const x = Math.random() * 100;
               const y = Math.random() * 100;
-              const size = Math.random() * 2.5 + 1;
-              const opacity = Math.random() * 0.9 + 0.3;
+              const size = Math.random() * 1.5 + 0.5;
+              const opacity = Math.random() * 0.8 + 0.2;
               const animationDelay = Math.random() * 5;
-              const isBlue = Math.random() > 0.3; // 70% chance for blue stars
               
               return (
                 <div
                   key={`bg-star-${i}`}
-                  className={`absolute rounded-full animate-pulse ${
-                    isBlue ? 'bg-blue-400' : 'bg-white'
-                  }`}
+                  className="absolute bg-white rounded-full animate-pulse"
                   style={{
                     left: `${x}%`,
                     top: `${y}%`,
@@ -152,53 +149,28 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
                     height: `${size}px`,
                     opacity,
                     animationDelay: `${animationDelay}s`,
-                    animationDuration: `${2 + Math.random() * 3}s`,
-                    boxShadow: isBlue ? '0 0 8px rgba(96, 165, 250, 0.6)' : '0 0 4px rgba(255, 255, 255, 0.4)'
+                    animationDuration: `${2 + Math.random() * 3}s`
                   }}
                 />
               );
             })}
           </div>
 
-          {/* Golden sun-like hues and nebula effects */}
+          {/* Nebula-like galaxy center glow */}
           <div
-            className="absolute bg-gradient-radial from-yellow-400/25 via-orange-500/15 to-transparent rounded-full animate-pulse"
-            style={{
-              width: `${Math.min(containerWidth, containerHeight) * 0.4}px`,
-              height: `${Math.min(containerWidth, containerHeight) * 0.4}px`,
-              left: `${containerWidth / 3}px`,
-              top: `${containerHeight / 4}px`,
-              transform: 'translate(-50%, -50%)',
-              animationDuration: '6s'
-            }}
-          />
-          
-          <div
-            className="absolute bg-gradient-radial from-amber-300/20 via-yellow-500/10 to-transparent rounded-full animate-pulse"
+            className="absolute bg-gradient-radial from-purple-400/20 via-blue-500/10 via-orange-500/5 to-transparent rounded-full animate-pulse"
             style={{
               width: `${Math.min(containerWidth, containerHeight) * 0.3}px`,
               height: `${Math.min(containerWidth, containerHeight) * 0.3}px`,
-              left: `${containerWidth * 0.7}px`,
-              top: `${containerHeight * 0.6}px`,
+              left: `${containerWidth / 2}px`,
+              top: `${containerHeight / 2}px`,
               transform: 'translate(-50%, -50%)',
               animationDuration: '8s'
             }}
           />
 
-          <div
-            className="absolute bg-gradient-radial from-purple-400/15 via-blue-500/12 to-transparent rounded-full animate-pulse"
-            style={{
-              width: `${Math.min(containerWidth, containerHeight) * 0.35}px`,
-              height: `${Math.min(containerWidth, containerHeight) * 0.35}px`,
-              left: `${containerWidth / 2}px`,
-              top: `${containerHeight / 2}px`,
-              transform: 'translate(-50%, -50%)',
-              animationDuration: '10s'
-            }}
-          />
-
-          {/* Distant galaxy spiral arms with golden tints */}
-          <div className="absolute inset-0 opacity-25">
+          {/* Distant galaxy spiral arms */}
+          <div className="absolute inset-0 opacity-20">
             {Array.from({ length: 5 }).map((_, armIndex) => (
               <div
                 key={`spiral-arm-${armIndex}`}
@@ -208,9 +180,7 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
                   top: `${containerHeight / 2}px`,
                   width: '2px',
                   height: `${Math.min(containerWidth, containerHeight) * 0.4}px`,
-                  background: armIndex % 2 === 0 
-                    ? 'linear-gradient(to bottom, rgba(252, 211, 77, 0.4), rgba(147, 197, 253, 0.2), transparent)'
-                    : 'linear-gradient(to bottom, rgba(147, 197, 253, 0.4), rgba(252, 211, 77, 0.2), transparent)',
+                  background: 'linear-gradient(to bottom, rgba(147, 197, 253, 0.3), transparent)',
                   transformOrigin: 'top center',
                   transform: `rotate(${armIndex * 72}deg) translate(-50%, 0)`,
                   borderRadius: '1px'
