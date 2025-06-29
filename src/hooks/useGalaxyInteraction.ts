@@ -3,7 +3,7 @@ import { TelescopePosition } from '../types/astronomy';
 import { screenToTelescopeCoordinates } from '../utils/starPositions';
 
 export const useGalaxyInteraction = (containerWidth: number, containerHeight: number) => {
-  const [position, setPosition] = useState<TelescopePosition>({ x: 0, y: 0, zoom: 3 }); // Changed base zoom to 3x
+  const [position, setPosition] = useState<TelescopePosition>({ x: 0, y: 0, zoom: 2.5 }); // Optimal zoom for exploration
   const [isDragging, setIsDragging] = useState(false);
   const [coordinates, setCoordinates] = useState({ ra: '12h 0m', dec: '+00°' });
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -19,11 +19,19 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
     const deltaX = e.clientX - dragStartRef.current.x;
     const deltaY = e.clientY - dragStartRef.current.y;
 
-    setPosition(prev => ({
-      ...prev,
-      x: prev.x + deltaX,
-      y: prev.y + deltaY
-    }));
+    setPosition(prev => {
+      // Allow movement across the entire starfield area
+      const maxX = containerWidth * 1.5;
+      const maxY = containerHeight * 1.5;
+      const minX = -maxX;
+      const minY = -maxY;
+      
+      return {
+        ...prev,
+        x: Math.max(minX, Math.min(maxX, prev.x + deltaX)),
+        y: Math.max(minY, Math.min(maxY, prev.y + deltaY))
+      };
+    });
 
     // Update coordinates
     const newCoords = screenToTelescopeCoordinates(e.clientX, e.clientY, containerWidth, containerHeight);
@@ -40,15 +48,16 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
   const setZoom = useCallback((zoom: number) => {
     setPosition(prev => ({
       ...prev,
-      zoom: Math.max(0.5, Math.min(5, zoom)) // Increased max zoom to 5x
+      zoom: Math.max(1.0, Math.min(5, zoom)) // Zoom range 1x to 5x for better exploration
     }));
   }, []);
 
   const focusOnPosition = useCallback((x: number, y: number) => {
+    // Adjust for the larger starfield
     setPosition(prev => ({
       ...prev,
-      x: -x + containerWidth / 2,
-      y: -y + containerHeight / 2
+      x: -(x - containerWidth * 1.5) + containerWidth / 2,
+      y: -(y - containerHeight * 1.5) + containerHeight / 2
     }));
 
     const newCoords = screenToTelescopeCoordinates(x, y, containerWidth, containerHeight);
