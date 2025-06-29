@@ -8,7 +8,7 @@ import { useGalaxyInteraction } from './hooks/useGalaxyInteraction';
 import { generateStarPositions } from './utils/starPositions';
 import { astronomyApi } from './services/astronomyApi';
 import { Star, FilterType, DayEvents } from './types/astronomy';
-import { Satellite, Wifi, WifiOff, Menu, X } from 'lucide-react';
+import { Satellite, Wifi, WifiOff, Menu, X, ArrowLeft } from 'lucide-react';
 
 function App() {
   const [showMainMenu, setShowMainMenu] = useState(true);
@@ -236,6 +236,18 @@ function App() {
             </div>
           </div>
         )}
+
+        {/* Back to Main Menu Button */}
+        <button
+          onClick={() => setShowMainMenu(true)}
+          className="fixed bottom-4 left-4 z-30 p-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-xl hover:bg-slate-800/90 transition-all duration-300 hover:scale-105 shadow-lg group"
+          title="Back to Main Menu"
+        >
+          <div className="flex items-center gap-2">
+            <ArrowLeft className="w-5 h-5 text-white group-hover:text-blue-400 transition-colors" />
+            <span className="text-white text-sm font-medium group-hover:text-blue-400 transition-colors">Menu</span>
+          </div>
+        </button>
 
         {/* Loading Indicator */}
         {isLoading && (

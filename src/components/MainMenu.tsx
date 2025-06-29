@@ -148,8 +148,25 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onEnterTelescope }) => {
 
       {/* Footer */}
       <div className="relative z-10 border-t border-slate-700/50 bg-slate-900/50 backdrop-blur-sm py-6 px-4">
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-slate-400 text-sm">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+            <div className="flex items-center gap-2 text-slate-400 text-sm">
+              <Satellite className="w-4 h-4" />
+              <span>Powered by NASA Open Data Portal</span>
+            </div>
+            <div className="text-center">
+              <div className="text-white text-sm font-medium">Made by Pavan</div>
+              <div className="text-slate-400 text-xs">Harish</div>
+            </div>
+          </div>
+          <div className="text-slate-400 text-sm text-center md:text-right">
+            © 2025 Telescope Through Time • Explore the Universe
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
             <Satellite className="w-4 h-4" />
             <span>Powered by NASA Open Data Portal</span>
           </div>
