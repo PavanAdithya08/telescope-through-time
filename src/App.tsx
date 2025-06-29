@@ -4,12 +4,11 @@ import { Galaxy } from './components/Galaxy';
 import { DiscoveryPanel } from './components/DiscoveryPanel';
 import { Calendar } from './components/Calendar';
 import { EventModal } from './components/EventModal';
-import { CreditsPanel } from './components/CreditsPanel';
 import { useGalaxyInteraction } from './hooks/useGalaxyInteraction';
 import { generateStarPositions } from './utils/starPositions';
 import { astronomyApi } from './services/astronomyApi';
 import { Star, FilterType, DayEvents } from './types/astronomy';
-import { Satellite, Wifi, WifiOff, Menu, X, ArrowLeft } from 'lucide-react';
+import { Satellite, Wifi, WifiOff, Menu, X } from 'lucide-react';
 
 function App() {
   const [showMainMenu, setShowMainMenu] = useState(true);
@@ -128,10 +127,6 @@ function App() {
     setShowMainMenu(false);
   };
 
-  const handleBackToMenu = () => {
-    setShowMainMenu(true);
-  };
-
   // Show main menu first
   if (showMainMenu) {
     return <MainMenu onEnterTelescope={handleEnterTelescope} />;
@@ -159,16 +154,6 @@ function App() {
           title="Open Controls"
         >
           <Menu className="w-5 h-5 text-white" />
-        </button>
-
-        {/* Back Button */}
-        <button
-          onClick={handleBackToMenu}
-          className="fixed top-4 right-4 md:right-80 z-30 p-3 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg hover:bg-slate-800/90 transition-all duration-300 flex items-center gap-2"
-          title="Back to Main Menu"
-        >
-          <ArrowLeft className="w-5 h-5 text-white" />
-          <span className="hidden md:inline text-white text-sm font-medium">Main Menu</span>
         </button>
 
         {/* Top Bar */}
@@ -266,7 +251,7 @@ function App() {
         )}
 
         {/* Instructions */}
-        <div className="hidden lg:block absolute bottom-20 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm">
+        <div className="hidden lg:block absolute bottom-4 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm">
           <div className="flex items-center gap-2 mb-3">
             <Satellite className="w-4 h-4 text-blue-400" />
             <h3 className="text-sm font-semibold text-white">NASA-Powered Guide</h3>
@@ -280,9 +265,6 @@ function App() {
             <li>🛰️ Real NASA data integration</li>
           </ul>
         </div>
-
-        {/* Credits Panel */}
-        <CreditsPanel />
       </div>
 
       {/* Event Modal */}
