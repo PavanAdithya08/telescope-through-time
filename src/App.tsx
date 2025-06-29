@@ -4,7 +4,7 @@ import { Galaxy } from './components/Galaxy';
 import { DiscoveryPanel } from './components/DiscoveryPanel';
 import { Calendar } from './components/Calendar';
 import { EventModal } from './components/EventModal';
-import { CreditsPanel } from './components/CreditsPanel';
+import { CreditsPanel } from './components/CreditsPanel.tsx';
 import { useGalaxyInteraction } from './hooks/useGalaxyInteraction';
 import { generateStarPositions } from './utils/starPositions';
 import { astronomyApi } from './services/astronomyApi';
