@@ -43,25 +43,25 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
       
       {/* Discovery Panel */}
       <div className={`
-        fixed md:relative inset-y-0 left-0 z-50 md:z-auto
+        fixed inset-y-0 left-0 z-50
         w-80 md:w-64 h-full
-        bg-slate-900/95 md:bg-slate-900/90 backdrop-blur-sm
-        border-r border-slate-700/50
+        bg-black/90 backdrop-blur-sm
+        border-r border-slate-600/30
         p-4 flex flex-col
         transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         {/* Mobile Close Button */}
         <button
           onClick={onToggle}
-          className="md:hidden absolute top-4 right-4 p-2 bg-slate-800/50 border border-slate-600/50 rounded-lg hover:bg-slate-700/50 transition-colors"
+          className="md:hidden absolute top-4 right-4 p-2 bg-slate-800/70 border border-slate-600/50 rounded-lg hover:bg-slate-700/70 transition-colors"
         >
           <X className="w-4 h-4 text-white" />
         </button>
 
       <div className="flex items-center gap-2 mb-6">
-        <Telescope className="w-6 h-6 text-blue-400" />
-        <h2 className="text-lg font-bold text-white">Discovery</h2>
+          <Telescope className="w-6 h-6 text-blue-400" />
+          <h2 className="text-lg font-bold text-white">Telescope Controls</h2>
       </div>
 
       {/* Category Filters */}
@@ -77,8 +77,8 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
               }}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-all duration-200
                 ${filter === type 
-                  ? 'bg-blue-600/30 border border-blue-400/50 shadow-sm' 
-                  : 'bg-slate-800/30 border border-transparent hover:bg-slate-700/40'
+                  ? 'bg-blue-600/40 border border-blue-400/60 shadow-sm' 
+                  : 'bg-slate-800/50 border border-transparent hover:bg-slate-700/60'
                 }
               `}
               title={label}
@@ -99,7 +99,7 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
         <div className="flex items-center gap-1 mb-3">
           <button
             onClick={() => onZoomChange(Math.max(1.0, zoom - 0.5))}
-            className="p-1.5 bg-slate-800/50 border border-slate-600/50 rounded-md hover:bg-slate-700/50 transition-colors"
+            className="p-1.5 bg-slate-800/70 border border-slate-600/50 rounded-md hover:bg-slate-700/70 transition-colors"
             disabled={zoom <= 1.0}
           >
             <ZoomOut className="w-3 h-3 text-white" />
@@ -109,7 +109,7 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
           </div>
           <button
             onClick={() => onZoomChange(Math.min(5.0, zoom + 0.5))}
-            className="p-1.5 bg-slate-800/50 border border-slate-600/50 rounded-md hover:bg-slate-700/50 transition-colors"
+            className="p-1.5 bg-slate-800/70 border border-slate-600/50 rounded-md hover:bg-slate-700/70 transition-colors"
             disabled={zoom >= 5.0}
           >
             <ZoomIn className="w-3 h-3 text-white" />
@@ -123,7 +123,7 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
               className={`py-1 px-1 text-xs rounded transition-colors
                 ${zoom === level 
                   ? 'bg-blue-600 text-white' 
-                  : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                  : 'bg-slate-800/70 text-slate-300 hover:bg-slate-700/70'
                 }
               `}
             >
@@ -153,12 +153,13 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
       {/* Instructions */}
       <div className="mt-auto">
         <div className="bg-slate-800/20 border border-slate-600/20 rounded-md p-3">
-          <h4 className="text-xs font-semibold text-white mb-2">Guide</h4>
+          <h4 className="text-xs font-semibold text-white mb-2">Telescope Guide</h4>
           <ul className="text-xs text-slate-300 space-y-0.5">
-            <li>• Drag to pan galaxy</li>
-            <li>• Click stars for events</li>
-            <li>• Use filters to highlight</li>
+            <li>• Drag inside eyepiece to pan</li>
+            <li>• Click stars for NASA data</li>
+            <li>• Use filters for objects</li>
             <li>• Blue stars have events</li>
+            <li>• Red crosshairs mark center</li>
           </ul>
         </div>
       </div>
