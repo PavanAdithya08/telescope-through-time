@@ -45,6 +45,15 @@ export const generateStarPositions = (containerWidth: number = 800, containerHei
         'Orion', 'Cassiopeia', 'Ursa Major', 'Ursa Minor', 'Draco', 'Cygnus'
       ];
       
+      // Assign celestial object types based on date patterns
+      const getObjectType = (starIndex: number): 'Star' | 'Planet' | 'Comet' | 'Mission' => {
+        const typeRandom = starIndex * 7919 % 100; // Deterministic but varied
+        if (typeRandom < 50) return 'Star';        // 50% stars
+        if (typeRandom < 70) return 'Planet';      // 20% planets  
+        if (typeRandom < 85) return 'Comet';       // 15% comets
+        return 'Mission';                          // 15% missions
+      };
+      
       stars.push({
         id: `star-${dateKey}`,
         date: dateKey,
@@ -52,7 +61,8 @@ export const generateStarPositions = (containerWidth: number = 800, containerHei
         y,
         brightness,
         constellation: constellations[Math.floor(Math.random() * constellations.length)],
-        hasEvents: true // All stars now have events since we have daily data
+        hasEvents: true, // All stars now have events since we have daily data
+        type: getObjectType(starIndex)
       });
     }
   }

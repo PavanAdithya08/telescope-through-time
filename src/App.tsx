@@ -20,6 +20,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiStatus, setApiStatus] = useState<'connected' | 'disconnected' | 'loading'>('loading');
   const [isDiscoveryPanelOpen, setIsDiscoveryPanelOpen] = useState(false);
+  const [crosshairStar, setCrosshairStar] = useState<Star | null>(null);
 
   const {
     position,
@@ -116,6 +117,10 @@ function App() {
     setSelectedStar(null);
   };
 
+  const handleCrosshairHover = (star: Star | null) => {
+    setCrosshairStar(star);
+  };
+
   return (
     <div className="h-screen bg-slate-900 flex overflow-hidden relative">
       {/* Discovery Panel */}
@@ -196,8 +201,30 @@ function App() {
             onMouseUp={handleMouseUp}
             isDragging={isDragging}
             onClick={handleOutsideClick}
+            onCrosshairHover={handleCrosshairHover}
           />
         </div>
+
+        {/* Crosshair Info Panel */}
+        {crosshairStar && (
+          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-lg px-4 py-3 max-w-sm">
+            <div className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full 
+                ${crosshairStar.type === 'Star' ? 'bg-blue-400' : 
+                  crosshairStar.type === 'Planet' ? 'bg-orange-400' : 
+                  crosshairStar.type === 'Comet' ? 'bg-green-400' : 'bg-purple-400'}
+              `} />
+              <div>
+                <div className="text-white font-medium text-sm">
+                  {crosshairStar.type} - {crosshairStar.date}
+                </div>
+                <div className="text-slate-300 text-xs">
+                  {crosshairStar.constellation} • Click for NASA data
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Loading Indicator */}
         {isLoading && (

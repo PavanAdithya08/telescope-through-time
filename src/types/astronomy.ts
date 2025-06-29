@@ -26,6 +26,7 @@ export interface Star {
   brightness: number;
   constellation: string;
   hasEvents: boolean;
+  type: 'Star' | 'Planet' | 'Comet' | 'Mission';
 }
 
 export interface TelescopePosition {

@@ -14,6 +14,7 @@ interface GalaxyProps {
   onMouseUp: () => void;
   isDragging: boolean;
   onClick?: () => void;
+  onCrosshairHover?: (star: Star | null) => void;
 }
 
 export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
@@ -28,22 +29,91 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
   onMouseMove,
   onMouseUp,
   isDragging,
-  onClick
+  onClick,
+  onCrosshairHover
 }, ref) => {
   const filteredStars = useMemo(() => {
     if (filter === 'All') return stars;
     return stars.filter(star => {
-      // For now, randomly assign filter types to stars
-      const starType = Math.random();
-      switch (filter) {
-        case 'Star': return starType < 0.4;
-        case 'Planet': return starType >= 0.4 && starType < 0.6;
-        case 'Comet': return starType >= 0.6 && starType < 0.8;
-        case 'Mission': return starType >= 0.8;
-        default: return true;
-      }
+      return star.type === filter;
     });
   }, [stars, filter]);
+
+  // Find star under crosshair
+  const crosshairStar = useMemo(() => {
+    const centerX = containerWidth / 2;
+    const centerY = containerHeight / 2;
+    
+    // Convert screen center to galaxy coordinates
+    const galaxyCenterX = (centerX - position.x) / position.zoom;
+    const galaxyCenterY = (centerY - position.y) / position.zoom;
+    
+    // Find closest star within crosshair radius
+    const crosshairRadius = 15 / position.zoom; // Adjust for zoom
+    
+    let closestStar: Star | null = null;
+    let closestDistance = crosshairRadius;
+    
+    filteredStars.forEach(star => {
+      const distance = Math.sqrt(
+        Math.pow(star.x - galaxyCenterX, 2) + Math.pow(star.y - galaxyCenterY, 2)
+      );
+      
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestStar = star;
+      }
+    });
+    
+    return closestStar;
+  }, [filteredStars, position, containerWidth, containerHeight]);
+
+  // Notify parent about crosshair hover
+  React.useEffect(() => {
+    if (onCrosshairHover) {
+      onCrosshairHover(crosshairStar);
+    }
+  }, [crosshairStar, onCrosshairHover]);
+
+  // Get star color based on type
+  const getStarColor = (star: Star, isSelected: boolean) => {
+    if (isSelected) {
+      return 'bg-yellow-400 shadow-lg shadow-yellow-400/50 animate-pulse';
+    }
+    
+    switch (star.type) {
+      case 'Star':
+        return 'bg-blue-400 hover:bg-blue-300 hover:shadow-lg hover:shadow-blue-400/50';
+      case 'Planet':
+        return 'bg-orange-400 hover:bg-orange-300 hover:shadow-lg hover:shadow-orange-400/50';
+      case 'Comet':
+        return 'bg-green-400 hover:bg-green-300 hover:shadow-lg hover:shadow-green-400/50';
+      case 'Mission':
+        return 'bg-purple-400 hover:bg-purple-300 hover:shadow-lg hover:shadow-purple-400/50';
+      default:
+        return 'bg-white hover:bg-yellow-200';
+    }
+  };
+
+  // Get star glow effect
+  const getStarGlow = (star: Star, isSelected: boolean) => {
+    if (isSelected) {
+      return '0 0 20px rgba(255, 255, 0, 0.8), 0 0 40px rgba(255, 255, 0, 0.4)';
+    }
+    
+    switch (star.type) {
+      case 'Star':
+        return '0 0 10px rgba(59, 130, 246, 0.6)';
+      case 'Planet':
+        return '0 0 10px rgba(251, 146, 60, 0.6)';
+      case 'Comet':
+        return '0 0 10px rgba(74, 222, 128, 0.6)';
+      case 'Mission':
+        return '0 0 10px rgba(168, 85, 247, 0.6)';
+      default:
+        return 'none';
+    }
+  };
 
   // Calculate responsive crosshair size
   const crosshairSize = Math.min(containerWidth, containerHeight) * 0.3;
@@ -98,19 +168,17 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
         {/* Interactive Stars */}
         {filteredStars.map((star) => {
           const isSelected = selectedStar?.id === star.id;
+          const isUnderCrosshair = crosshairStar?.id === star.id;
           const baseSize = 2 + star.brightness * 3;
           
           return (
             <div
               key={star.id}
               className={`absolute rounded-full transition-all duration-300 cursor-pointer touch-manipulation
-                ${isSelected 
-                  ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50 animate-pulse z-20' 
-                  : star.hasEvents 
-                    ? 'bg-blue-400 hover:bg-blue-300 hover:shadow-lg hover:shadow-blue-400/50 z-10' 
-                    : 'bg-white hover:bg-yellow-200 z-10'
-                }
-                hover:scale-125 md:hover:scale-150 active:scale-110 md:active:scale-125
+                ${getStarColor(star, isSelected)} 
+                ${isUnderCrosshair ? 'scale-125 ring-2 ring-white/50' : ''}
+                hover:scale-125 md:hover:scale-150 active:scale-110 md:active:scale-125 z-10
+                ${isSelected ? 'z-20' : ''}
               `}
               style={{
                 left: `${star.x}px`,
@@ -118,17 +186,13 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
                 width: `${baseSize}px`,
                 height: `${baseSize}px`,
                 opacity: star.brightness,
-                boxShadow: isSelected 
-                  ? '0 0 20px rgba(255, 255, 0, 0.8), 0 0 40px rgba(255, 255, 0, 0.4)' 
-                  : star.hasEvents 
-                    ? '0 0 10px rgba(59, 130, 246, 0.6)'
-                    : 'none'
+                boxShadow: getStarGlow(star, isSelected)
               }}
               onClick={(e) => {
                 e.stopPropagation();
                 onStarClick(star);
               }}
-              title={`${star.date} - ${star.constellation}`}
+              title={`${star.type} - ${star.date} - ${star.constellation}`}
             />
           );
         })}

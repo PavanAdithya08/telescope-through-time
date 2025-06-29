@@ -157,8 +157,9 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
           <ul className="text-xs text-slate-300 space-y-0.5">
             <li>• Drag to pan galaxy</li>
             <li>• Click stars for events</li>
-            <li>• Use filters to highlight</li>
-            <li>• Blue stars have events</li>
+            <li>• Blue = Stars, Orange = Planets</li>
+            <li>• Green = Comets, Purple = Missions</li>
+            <li>• Crosshair shows object info</li>
           </ul>
         </div>
       </div>
