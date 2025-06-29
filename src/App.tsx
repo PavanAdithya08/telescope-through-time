@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Galaxy } from './components/Galaxy';
-import { TelescopeLayer } from './components/TelescopeLayer';
+import { DiscoveryPanel } from './components/DiscoveryPanel';
+import { Calendar } from './components/Calendar';
 import { EventModal } from './components/EventModal';
 import { useGalaxyInteraction } from './hooks/useGalaxyInteraction';
 import { generateStarPositions } from './utils/starPositions';
 import { astronomyApi } from './services/astronomyApi';
 import { Star, FilterType, DayEvents } from './types/astronomy';
-import { Satellite, Wifi, WifiOff, Menu } from 'lucide-react';
+import { Satellite, Wifi, WifiOff, Menu, X } from 'lucide-react';
 
 function App() {
   const galaxyContainerRef = useRef<HTMLDivElement>(null);
   const [containerDimensions, setContainerDimensions] = useState({ width: 800, height: 600 });
   const [stars, setStars] = useState<Star[]>([]);
   const [selectedStar, setSelectedStar] = useState<Star | null>(null);
-  const [detectedStar, setDetectedStar] = useState<Star | null>(null);
   const [filter, setFilter] = useState<FilterType>('All');
   const [events, setEvents] = useState<DayEvents | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -61,6 +61,11 @@ function App() {
     }
   }, [containerDimensions]);
 
+  // Close discovery panel when clicking outside on mobile
+  const handleOutsideClick = () => {
+    if (window.innerWidth < 768) setIsDiscoveryPanelOpen(false);
+  };
+
   // Test NASA API connection on mount
   useEffect(() => {
     const testConnection = async () => {
@@ -76,13 +81,6 @@ function App() {
 
     testConnection();
   }, []);
-
-  // Auto-fetch data when star is detected under crosshairs
-  useEffect(() => {
-    if (detectedStar && detectedStar !== selectedStar) {
-      handleStarClick(detectedStar);
-    }
-  }, [detectedStar]);
 
   const handleStarClick = async (star: Star) => {
     setSelectedStar(star);
@@ -113,22 +111,24 @@ function App() {
     }
   };
 
-  const handleStarDetected = (star: Star | null) => {
-    setDetectedStar(star);
-  };
-
   const handleCloseModal = () => {
     setEvents(null);
     setSelectedStar(null);
   };
 
-  // Close discovery panel when clicking outside on mobile
-  const handleOutsideClick = () => {
-    if (window.innerWidth < 768) setIsDiscoveryPanelOpen(false);
-  };
-
   return (
     <div className="h-screen bg-slate-900 flex overflow-hidden relative">
+      {/* Discovery Panel */}
+      <DiscoveryPanel
+        filter={filter}
+        onFilterChange={setFilter}
+        zoom={position.zoom}
+        onZoomChange={setZoom}
+        coordinates={coordinates}
+        isOpen={isDiscoveryPanelOpen}
+        onToggle={() => setIsDiscoveryPanelOpen(!isDiscoveryPanelOpen)}
+      />
+
       {/* Main Content */}
       <div className="flex-1 relative">
         {/* Mobile Menu Button */}
@@ -141,7 +141,7 @@ function App() {
         </button>
 
         {/* Top Bar */}
-        <div className="absolute top-4 left-4 md:left-4 z-20 ml-16 md:ml-0">
+        <div className="absolute top-4 left-4 md:left-4 z-10 ml-16 md:ml-0">
           <div className="bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg px-3 md:px-4 py-2 md:py-3">
             <div className="flex items-center gap-3">
               <Satellite className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
@@ -174,7 +174,13 @@ function App() {
           </div>
         </div>
 
-        {/* Galaxy Background Layer */}
+        {/* Calendar Component */}
+        <Calendar
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+        />
+
+        {/* Galaxy View */}
         <div className="w-full h-full">
           <Galaxy
             ref={galaxyContainerRef}
@@ -193,27 +199,9 @@ function App() {
           />
         </div>
 
-        {/* Telescope Layer with UI */}
-        <TelescopeLayer
-          stars={stars}
-          containerWidth={containerDimensions.width}
-          containerHeight={containerDimensions.height}
-          position={position}
-          selectedDate={selectedDate}
-          filter={filter}
-          onFilterChange={setFilter}
-          onZoomChange={setZoom}
-          onDateSelect={handleDateSelect}
-          coordinates={coordinates}
-          isDiscoveryPanelOpen={isDiscoveryPanelOpen}
-          onDiscoveryPanelToggle={() => setIsDiscoveryPanelOpen(!isDiscoveryPanelOpen)}
-          onStarDetected={handleStarDetected}
-          focusOnPosition={focusOnPosition}
-        />
-
         {/* Loading Indicator */}
         {isLoading && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg px-6 py-3 z-30">
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg px-6 py-3">
             <div className="flex items-center gap-3">
               <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
               <div>
@@ -225,17 +213,17 @@ function App() {
         )}
 
         {/* Instructions */}
-        <div className="hidden lg:block absolute bottom-4 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm z-20">
+        <div className="hidden lg:block absolute bottom-4 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm">
           <div className="flex items-center gap-2 mb-3">
             <Satellite className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-semibold text-white">Telescope Guide</h3>
+            <h3 className="text-sm font-semibold text-white">NASA-Powered Guide</h3>
           </div>
           <ul className="text-xs text-slate-300 space-y-1">
-            <li>🔭 Drag to explore space</li>
-            <li>⭐ Position crosshairs over stars</li>
-            <li>🎯 Auto-detects stars under crosshairs</li>
+            <li>🔭 Drag to explore the galaxy</li>
+            <li>⭐ Click blue stars for NASA events</li>
             <li>📅 Use calendar to jump to dates</li>
             <li>🔍 Filter by event types</li>
+            <li>🎯 Red dot shows telescope center</li>
             <li>🛰️ Real NASA data integration</li>
           </ul>
         </div>
