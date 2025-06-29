@@ -61,7 +61,7 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
 
       <div className="flex items-center gap-2 mb-6">
         <Telescope className="w-6 h-6 text-blue-400" />
-        <h2 className="text-lg font-bold text-white">Discovery</h2>
+        <h2 className="text-lg font-bold text-white">Timeline Controls</h2>
       </div>
 
       {/* Category Filters */}
@@ -152,13 +152,14 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
 
       {/* Instructions */}
       <div className="mt-auto">
-        <div className="bg-slate-800/20 border border-slate-600/20 rounded-md p-3">
-          <h4 className="text-xs font-semibold text-white mb-2">Guide</h4>
+        <div className="bg-slate-800/30 border border-slate-600/30 rounded-md p-3">
+          <h4 className="text-xs font-semibold text-white mb-2">Timeline Guide</h4>
           <ul className="text-xs text-slate-300 space-y-0.5">
-            <li>• Drag to pan galaxy</li>
-            <li>• Click stars for events</li>
-            <li>• Use filters to highlight</li>
-            <li>• Blue stars have events</li>
+            <li>• Scroll timeline vertically</li>
+            <li>• Click events for details</li>
+            <li>• Filter by event types</li>
+            <li>• ⭐ = Rare events</li>
+            <li>• 🌟 = Major events</li>
           </ul>
         </div>
       </div>
