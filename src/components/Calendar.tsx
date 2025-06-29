@@ -55,7 +55,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
       <div className="fixed top-20 md:top-4 right-4 z-20">
         <button
           onClick={() => setIsMinimized(false)}
-          className="p-3 bg-black/90 backdrop-blur-sm border border-slate-600/50 rounded-lg hover:bg-slate-800/90 transition-all duration-300 hover:scale-105 shadow-lg"
+          className="p-3 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg hover:bg-slate-800/90 transition-all duration-300 hover:scale-105 shadow-lg"
           title="Expand Calendar"
         >
           <CalendarIcon className="w-5 h-5 text-blue-400" />
@@ -65,15 +65,15 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
   }
 
   return (
-    <div className="fixed top-20 md:top-4 right-4 z-20 w-80 md:w-72 max-w-[calc(100vw-2rem)] bg-black/90 backdrop-blur-sm border border-slate-600/50 rounded-lg p-4 shadow-xl animate-in slide-in-from-right-5 fade-in duration-300">
+    <div className="fixed top-20 md:top-4 right-4 z-20 w-80 md:w-72 max-w-[calc(100vw-2rem)] bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 shadow-xl animate-in slide-in-from-right-5 fade-in duration-300">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <CalendarIcon className="w-4 h-4 text-blue-400" />
-          <h3 className="text-sm font-bold text-white">Observation Calendar</h3>
+          <h3 className="text-sm font-bold text-white">Star Calendar</h3>
         </div>
         <button
           onClick={() => setIsMinimized(true)}
-          className="p-1 bg-slate-800/70 border border-slate-600/50 rounded hover:bg-slate-700/70 transition-colors"
+          className="p-1 bg-slate-800/50 border border-slate-600/50 rounded hover:bg-slate-700/50 transition-colors"
           title="Minimize Calendar"
         >
           <Minimize2 className="w-3 h-3 text-white" />
@@ -84,7 +84,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
       <div className="flex items-center justify-between mb-3">
         <button
           onClick={() => setCurrentMonth(prev => (prev - 1 + 12) % 12)}
-          className="p-1.5 bg-slate-800/70 border border-slate-600/50 rounded hover:bg-slate-700/70 transition-colors"
+          className="p-1.5 bg-slate-800/50 border border-slate-600/50 rounded hover:bg-slate-700/50 transition-colors"
         >
           <ChevronLeft className="w-3 h-3 text-white" />
         </button>
@@ -95,7 +95,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect }
         </div>
         <button
           onClick={() => setCurrentMonth(prev => (prev + 1) % 12)}
-          className="p-1.5 bg-slate-800/70 border border-slate-600/50 rounded hover:bg-slate-700/70 transition-colors"
+          className="p-1.5 bg-slate-800/50 border border-slate-600/50 rounded hover:bg-slate-700/50 transition-colors"
         >
           <ChevronRight className="w-3 h-3 text-white" />
         </button>

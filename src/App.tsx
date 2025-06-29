@@ -117,7 +117,7 @@ function App() {
   };
 
   return (
-    <div className="h-screen bg-black flex overflow-hidden relative">
+    <div className="h-screen bg-slate-900 flex overflow-hidden relative">
       {/* Discovery Panel */}
       <DiscoveryPanel
         filter={filter}
@@ -130,19 +130,19 @@ function App() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 relative bg-black">
+      <div className="flex-1 relative">
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsDiscoveryPanelOpen(true)}
-          className="md:hidden fixed top-4 left-4 z-30 p-3 bg-black/90 backdrop-blur-sm border border-slate-600/50 rounded-lg hover:bg-slate-800/90 transition-all duration-300"
+          className="md:hidden fixed top-4 left-4 z-30 p-3 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg hover:bg-slate-800/90 transition-all duration-300"
           title="Open Controls"
         >
           <Menu className="w-5 h-5 text-white" />
         </button>
 
-        {/* Top Bar - moved further right to avoid telescope */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 md:left-auto md:transform-none md:right-80 z-10">
-          <div className="bg-black/90 backdrop-blur-sm border border-slate-600/50 rounded-lg px-3 md:px-4 py-2 md:py-3">
+        {/* Top Bar */}
+        <div className="absolute top-4 left-4 md:left-4 z-10 ml-16 md:ml-0">
+          <div className="bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg px-3 md:px-4 py-2 md:py-3">
             <div className="flex items-center gap-3">
               <Satellite className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
               <div>
@@ -201,7 +201,7 @@ function App() {
 
         {/* Loading Indicator */}
         {isLoading && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-slate-600/50 rounded-lg px-6 py-3">
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg px-6 py-3">
             <div className="flex items-center gap-3">
               <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
               <div>
@@ -212,18 +212,18 @@ function App() {
           </div>
         )}
 
-        {/* Instructions - repositioned to avoid telescope view */}
-        <div className="hidden lg:block absolute bottom-4 right-80 bg-black/90 backdrop-blur-sm border border-slate-600/50 rounded-lg p-4 max-w-sm">
+        {/* Instructions */}
+        <div className="hidden lg:block absolute bottom-4 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm">
           <div className="flex items-center gap-2 mb-3">
             <Satellite className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-semibold text-white">Telescope Operation</h3>
+            <h3 className="text-sm font-semibold text-white">NASA-Powered Guide</h3>
           </div>
           <ul className="text-xs text-slate-300 space-y-1">
-            <li>🔭 Drag inside eyepiece to explore</li>
-            <li>⭐ Click blue stars for NASA data</li>
+            <li>🔭 Drag to explore the galaxy</li>
+            <li>⭐ Click blue stars for NASA events</li>
             <li>📅 Use calendar to jump to dates</li>
-            <li>🔍 Use controls to filter objects</li>
-            <li>🎯 Red crosshairs mark center</li>
+            <li>🔍 Filter by event types</li>
+            <li>🎯 Red dot shows telescope center</li>
             <li>🛰️ Real NASA data integration</li>
           </ul>
         </div>
