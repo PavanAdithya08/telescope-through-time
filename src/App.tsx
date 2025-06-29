@@ -175,7 +175,7 @@ function App() {
         </div>
 
         {/* Galaxy Background Layer */}
-        <div className="w-full h-full">
+        <div className="w-full h-full relative">
           <Galaxy
             ref={galaxyContainerRef}
             stars={stars}
@@ -225,18 +225,18 @@ function App() {
         )}
 
         {/* Instructions */}
-        <div className="hidden lg:block absolute bottom-4 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm z-20">
+        <div className="hidden lg:block absolute bottom-4 right-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 max-w-sm z-30">
           <div className="flex items-center gap-2 mb-3">
             <Satellite className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-semibold text-white">Telescope Guide</h3>
+            <h3 className="text-sm font-semibold text-white">Operation Guide</h3>
           </div>
           <ul className="text-xs text-slate-300 space-y-1">
-            <li>🔭 Drag to explore space</li>
-            <li>⭐ Position crosshairs over stars</li>
-            <li>🎯 Auto-detects stars under crosshairs</li>
-            <li>📅 Use calendar to jump to dates</li>
-            <li>🔍 Filter by event types</li>
-            <li>🛰️ Real NASA data integration</li>
+            <li>🔭 Drag galaxy to navigate</li>
+            <li>🎯 Position telescope crosshairs over stars</li>
+            <li>⭐ Auto-detects and loads NASA data</li>
+            <li>📅 Calendar jumps to specific dates</li>
+            <li>🔍 Use filters to highlight objects</li>
+            <li>🌌 Full galaxy visible in periphery</li>
           </ul>
         </div>
       </div>

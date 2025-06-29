@@ -51,12 +51,12 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
   return (
     <div 
       ref={ref}
-      className="relative w-full h-full overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900"
+      className="relative w-full h-full overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-black"
       onClick={onClick}
     >
       {/* Background stars */}
-      <div className="absolute inset-0 opacity-30">
-        {Array.from({ length: Math.floor((containerWidth * containerHeight) / 4000) }).map((_, i) => (
+      <div className="absolute inset-0 opacity-40">
+        {Array.from({ length: Math.floor((containerWidth * containerHeight) / 3000) }).map((_, i) => (
           <div
             key={`bg-star-${i}`}
             className="absolute w-0.5 h-0.5 bg-white rounded-full animate-pulse"
@@ -71,7 +71,7 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
 
       {/* Main galaxy container */}
       <div
-        className={`relative w-full h-full transition-transform duration-300 ${
+        className={`relative w-full h-full transition-transform duration-200 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
         style={{
@@ -84,7 +84,7 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
       >
         {/* Galaxy center glow */}
         <div
-          className="absolute bg-gradient-radial from-yellow-400/20 via-orange-500/10 to-transparent rounded-full"
+          className="absolute bg-gradient-radial from-yellow-400/25 via-orange-500/15 to-transparent rounded-full"
           style={{
             width: `${centerGlowSize}px`,
             height: `${centerGlowSize}px`,
@@ -109,18 +109,18 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
                     ? 'bg-blue-400 hover:bg-blue-300 hover:shadow-lg hover:shadow-blue-400/50 z-10' 
                     : 'bg-white hover:bg-yellow-200 z-10'
                 }
-                hover:scale-125 md:hover:scale-150 active:scale-110 md:active:scale-125
+                hover:scale-110 md:hover:scale-125 active:scale-105 md:active:scale-110
               `}
               style={{
                 left: `${star.x}px`,
                 top: `${star.y}px`,
                 width: `${baseSize}px`,
                 height: `${baseSize}px`,
-                opacity: star.brightness,
+                opacity: star.brightness * 0.9,
                 boxShadow: isSelected 
                   ? '0 0 20px rgba(255, 255, 0, 0.8), 0 0 40px rgba(255, 255, 0, 0.4)' 
                   : star.hasEvents 
-                    ? '0 0 10px rgba(59, 130, 246, 0.6)'
+                    ? '0 0 8px rgba(59, 130, 246, 0.5)'
                     : 'none'
               }}
               onClick={(e) => {
