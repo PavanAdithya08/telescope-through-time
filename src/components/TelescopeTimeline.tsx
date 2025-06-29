@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Star, Globe, Comet, Rocket, Calendar, ExternalLink, Lightbulb, MapPin } from 'lucide-react';
+import { Star, Globe, Home as Comet, Rocket, Calendar, ExternalLink, Lightbulb, MapPin } from 'lucide-react';
 import { TimelineEvent } from '../types/timeline';
 import { astronomicalEvents2025 } from '../data/astronomicalEvents';
 
