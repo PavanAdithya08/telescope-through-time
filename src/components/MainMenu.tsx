@@ -167,14 +167,3 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onEnterTelescope }) => {
     </div>
   );
 };
-            <Satellite className="w-4 h-4" />
-            <span>Powered by NASA Open Data Portal</span>
-          </div>
-          <div className="text-slate-400 text-sm">
-            © 2025 Telescope Through Time • Explore the Universe
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
