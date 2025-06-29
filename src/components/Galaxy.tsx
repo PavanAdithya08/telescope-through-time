@@ -45,8 +45,7 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
     });
   }, [stars, filter]);
 
-  // Calculate responsive crosshair size
-  const crosshairSize = Math.min(containerWidth, containerHeight) * 0.3;
+  // Calculate galaxy center glow size
   const centerGlowSize = Math.min(containerWidth, containerHeight) * 0.15;
 
   return (
@@ -132,49 +131,6 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
             />
           );
         })}
-      </div>
-
-      {/* Telescope viewport overlay */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div 
-          className="border-4 border-white/30 rounded-full relative"
-          style={{
-            width: `${crosshairSize}px`,
-            height: `${crosshairSize}px`
-          }}
-        >
-          <div 
-            className="absolute border-2 border-white/20 rounded-full"
-            style={{
-              inset: `${crosshairSize * 0.0625}px` // 4px equivalent at 64px base size
-            }}
-          />
-          <div 
-            className="absolute border border-white/10 rounded-full"
-            style={{
-              inset: `${crosshairSize * 0.125}px` // 8px equivalent at 64px base size
-            }}
-          />
-          
-          {/* Crosshairs */}
-          <div 
-            className="absolute left-1/2 w-0.5 bg-white/20 transform -translate-x-0.5"
-            style={{
-              top: `${crosshairSize * 0.0625}px`,
-              bottom: `${crosshairSize * 0.0625}px`
-            }}
-          />
-          <div 
-            className="absolute top-1/2 h-0.5 bg-white/20 transform -translate-y-0.5"
-            style={{
-              left: `${crosshairSize * 0.0625}px`,
-              right: `${crosshairSize * 0.0625}px`
-            }}
-          />
-          
-          {/* Center dot */}
-          <div className="absolute left-1/2 top-1/2 w-2 h-2 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
-        </div>
       </div>
     </div>
   );
