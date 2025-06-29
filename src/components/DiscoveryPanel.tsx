@@ -45,18 +45,19 @@ export const DiscoveryPanel: React.FC<DiscoveryPanelProps> = ({
       
       {/* Discovery Panel */}
       <div className={`
-        fixed inset-y-0 left-0 z-50
+        fixed inset-y-0 left-0 z-40
         w-80 md:w-64 h-full
         bg-black/90 backdrop-blur-sm
         border-r border-slate-600/30
         p-4 flex flex-col
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:translate-x-0
       `}>
         {/* Mobile Close Button */}
         <button
           onClick={onToggle}
-          className="md:hidden absolute top-4 right-4 p-2 bg-slate-800/70 border border-slate-600/50 rounded-lg hover:bg-slate-700/70 transition-colors"
+          className="md:hidden absolute top-4 right-4 p-2 bg-slate-800/70 border border-slate-600/50 rounded-lg hover:bg-slate-700/70 transition-colors z-50"
         >
           <X className="w-4 h-4 text-white" />
         </button>
