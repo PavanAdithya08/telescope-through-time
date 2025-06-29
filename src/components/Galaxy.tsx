@@ -7,7 +7,6 @@ interface GalaxyProps {
   containerHeight: number;
   position: { x: number; y: number; zoom: number };
   selectedStar: Star | null;
-  hoveredStar: Star | null;
   filter: FilterType;
   onStarClick: (star: Star) => void;
   onMouseDown: (e: React.MouseEvent) => void;
@@ -23,7 +22,6 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
   containerHeight,
   position,
   selectedStar,
-  hoveredStar,
   filter,
   onStarClick,
   onMouseDown,
@@ -100,33 +98,28 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
         {/* Interactive Stars */}
         {filteredStars.map((star) => {
           const isSelected = selectedStar?.id === star.id;
-          const isHovered = hoveredStar?.id === star.id;
           const baseSize = 2 + star.brightness * 3;
           
           return (
             <div
               key={star.id}
-              className={`absolute rounded-full transition-all duration-200 cursor-pointer touch-manipulation
+              className={`absolute rounded-full transition-all duration-300 cursor-pointer touch-manipulation
                 ${isSelected 
-                  ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50 animate-pulse z-20'
-                  : isHovered
-                    ? 'bg-red-400 shadow-lg shadow-red-400/50 z-20'
+                  ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50 animate-pulse z-20' 
                   : star.hasEvents 
                     ? 'bg-blue-400 hover:bg-blue-300 hover:shadow-lg hover:shadow-blue-400/50 z-10' 
                     : 'bg-white hover:bg-yellow-200 z-10'
                 }
-                ${isHovered ? 'scale-150' : 'hover:scale-125 md:hover:scale-150'} active:scale-110 md:active:scale-125
+                hover:scale-125 md:hover:scale-150 active:scale-110 md:active:scale-125
               `}
               style={{
                 left: `${star.x}px`,
                 top: `${star.y}px`,
-                width: `${baseSize * (isHovered ? 1.5 : 1)}px`,
-                height: `${baseSize * (isHovered ? 1.5 : 1)}px`,
+                width: `${baseSize}px`,
+                height: `${baseSize}px`,
                 opacity: star.brightness,
                 boxShadow: isSelected 
                   ? '0 0 20px rgba(255, 255, 0, 0.8), 0 0 40px rgba(255, 255, 0, 0.4)' 
-                  : isHovered
-                    ? '0 0 20px rgba(248, 113, 113, 0.8), 0 0 40px rgba(248, 113, 113, 0.4)'
                   : star.hasEvents 
                     ? '0 0 10px rgba(59, 130, 246, 0.6)'
                     : 'none'
@@ -144,26 +137,20 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
       {/* Telescope viewport overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div 
-          className={`border-4 rounded-full relative transition-all duration-300 ${
-            hoveredStar ? 'border-red-400/60' : 'border-white/30'
-          }`}
+          className="border-4 border-white/30 rounded-full relative"
           style={{
             width: `${crosshairSize}px`,
             height: `${crosshairSize}px`
           }}
         >
           <div 
-            className={`absolute border-2 rounded-full transition-all duration-300 ${
-              hoveredStar ? 'border-red-400/40' : 'border-white/20'
-            }`}
+            className="absolute border-2 border-white/20 rounded-full"
             style={{
               inset: `${crosshairSize * 0.0625}px` // 4px equivalent at 64px base size
             }}
           />
           <div 
-            className={`absolute border rounded-full transition-all duration-300 ${
-              hoveredStar ? 'border-red-400/20' : 'border-white/10'
-            }`}
+            className="absolute border border-white/10 rounded-full"
             style={{
               inset: `${crosshairSize * 0.125}px` // 8px equivalent at 64px base size
             }}
@@ -171,18 +158,14 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
           
           {/* Crosshairs */}
           <div 
-            className={`absolute left-1/2 w-0.5 transform -translate-x-0.5 transition-all duration-300 ${
-              hoveredStar ? 'bg-red-400/60' : 'bg-white/20'
-            }`}
+            className="absolute left-1/2 w-0.5 bg-white/20 transform -translate-x-0.5"
             style={{
               top: `${crosshairSize * 0.0625}px`,
               bottom: `${crosshairSize * 0.0625}px`
             }}
           />
           <div 
-            className={`absolute top-1/2 h-0.5 transform -translate-y-0.5 transition-all duration-300 ${
-              hoveredStar ? 'bg-red-400/60' : 'bg-white/20'
-            }`}
+            className="absolute top-1/2 h-0.5 bg-white/20 transform -translate-y-0.5"
             style={{
               left: `${crosshairSize * 0.0625}px`,
               right: `${crosshairSize * 0.0625}px`
@@ -190,11 +173,7 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
           />
           
           {/* Center dot */}
-          <div className={`absolute left-1/2 top-1/2 w-2 h-2 rounded-full transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
-            hoveredStar 
-              ? 'bg-red-400 animate-pulse shadow-lg shadow-red-400/50 w-3 h-3' 
-              : 'bg-red-500 animate-pulse'
-          }`} />
+          <div className="absolute left-1/2 top-1/2 w-2 h-2 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
         </div>
       </div>
     </div>
