@@ -71,19 +71,13 @@ export const generateStarPositions = (containerWidth: number = 800, containerHei
 };
 
 // Convert screen coordinates to telescope coordinates
-export const screenToTelescopeCoordinates = (galaxyX: number, galaxyY: number, containerWidth: number = 800, containerHeight: number = 600): { ra: string; dec: string } => {
-  // Convert galaxy coordinates to astronomical coordinates
-  // Normalize galaxy coordinates to 0-1 range based on container size
-  const normalizedX = Math.max(0, Math.min(1, galaxyX / containerWidth));
-  const normalizedY = Math.max(0, Math.min(1, galaxyY / containerHeight));
-  
-  // Convert to RA (0-24 hours) and DEC (-90 to +90 degrees)
-  const raHours = Math.floor(normalizedX * 24);
-  const raMinutes = Math.floor((normalizedX * 24 - raHours) * 60);
-  const dec = Math.floor((normalizedY - 0.5) * 180); // Center at 0 degrees
+export const screenToTelescopeCoordinates = (x: number, y: number, containerWidth: number = 800, containerHeight: number = 600): { ra: string; dec: string } => {
+  // Simulate coordinate conversion based on screen position
+  const ra = ((x / containerWidth) * 24).toFixed(1);
+  const dec = (((y - containerHeight / 2) / (containerHeight / 2)) * 90).toFixed(1);
   
   return {
-    ra: `${raHours.toString().padStart(2, '0')}h ${raMinutes.toString().padStart(2, '0')}m`,
-    dec: `${dec >= 0 ? '+' : ''}${dec.toString().padStart(2, '0')}°`
+    ra: `${ra}h`,
+    dec: `${dec > 0 ? '+' : ''}${dec}°`
   };
 };
