@@ -13,11 +13,9 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
     if (containerWidth > 0 && containerHeight > 0) {
       // Calculate initial position to center the galaxy
       // Galaxy is generated with center at (containerWidth/2, containerHeight/2)
-      // After zoom transformation, to center it on screen we need:
-      // position.x = containerWidth/2 - (containerWidth/2) * zoom
-      // position.y = containerHeight/2 - (containerHeight/2) * zoom
-      const initialX = (containerWidth / 2) * (1 - position.zoom);
-      const initialY = (containerHeight / 2) * (1 - position.zoom);
+      // To center it on screen with zoom 3x, we need to translate it
+      const initialX = -containerWidth;
+      const initialY = -containerHeight;
       
       setPosition(prev => ({
         ...prev,
@@ -34,7 +32,7 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
       );
       setCoordinates(newCoords);
     }
-  }, [containerWidth, containerHeight, position.zoom]);
+  }, [containerWidth, containerHeight]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     setIsDragging(true);
@@ -47,24 +45,17 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
     const deltaX = e.clientX - dragStartRef.current.x;
     const deltaY = e.clientY - dragStartRef.current.y;
 
-    setPosition(prev => {
-      const newX = prev.x + deltaX;
-      const newY = prev.y + deltaY;
-      
-      // Calculate what galaxy coordinates are at the telescope center (screen center)
-      const galaxyCenterX = (containerWidth / 2 - newX) / prev.zoom;
-      const galaxyCenterY = (containerHeight / 2 - newY) / prev.zoom;
-      
-      // Update coordinates
-      const newCoords = screenToTelescopeCoordinates(galaxyCenterX, galaxyCenterY, containerWidth, containerHeight);
-      setCoordinates(newCoords);
-      
-      return {
-        ...prev,
-        x: newX,
-        y: newY
-      };
-    });
+    setPosition(prev => ({
+      ...prev,
+      x: prev.x + deltaX,
+      y: prev.y + deltaY
+    }));
+
+    // Update coordinates to show what's at the telescope center (screen center)
+    const galaxyCenterX = (containerWidth / 2 - (position.x + deltaX)) / position.zoom;
+    const galaxyCenterY = (containerHeight / 2 - (position.y + deltaY)) / position.zoom;
+    const newCoords = screenToTelescopeCoordinates(galaxyCenterX, galaxyCenterY, containerWidth, containerHeight);
+    setCoordinates(newCoords);
 
     dragStartRef.current = { x: e.clientX, y: e.clientY };
   }, [isDragging, containerWidth, containerHeight]);
@@ -74,43 +65,28 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
     dragStartRef.current = null;
   }, []);
 
-  const setZoom = useCallback((newZoom: number) => {
-    const clampedZoom = Math.max(0.5, Math.min(5, newZoom));
-    
-    setPosition(prev => {
-      // Maintain the current galaxy coordinates at screen center when zooming
-      const currentGalaxyCenterX = (containerWidth / 2 - prev.x) / prev.zoom;
-      const currentGalaxyCenterY = (containerHeight / 2 - prev.y) / prev.zoom;
-      
-      // Calculate new position to keep the same galaxy point at screen center
-      const newX = containerWidth / 2 - currentGalaxyCenterX * clampedZoom;
-      const newY = containerHeight / 2 - currentGalaxyCenterY * clampedZoom;
-      
-      return {
-        x: newX,
-        y: newY,
-        zoom: clampedZoom
-      };
-    });
-  }, [containerWidth, containerHeight]);
+  const setZoom = useCallback((zoom: number) => {
+    setPosition(prev => ({
+      ...prev,
+      zoom: Math.max(0.5, Math.min(5, zoom)) // Increased max zoom to 5x
+    }));
+  }, []);
 
   const focusOnPosition = useCallback((x: number, y: number) => {
-    setPosition(prev => {
-      // Calculate the translation needed to center the star at screen center
-      const newX = containerWidth / 2 - x * prev.zoom;
-      const newY = containerHeight / 2 - y * prev.zoom;
-      
-      // Update coordinates to show the selected star's position
-      const newCoords = screenToTelescopeCoordinates(x, y, containerWidth, containerHeight);
-      setCoordinates(newCoords);
-      
-      return {
-        ...prev,
-        x: newX,
-        y: newY
-      };
-    });
-  }, [containerWidth, containerHeight]);
+    // Calculate the translation needed to center the star at screen center
+    const newX = containerWidth / 2 - x * position.zoom;
+    const newY = containerHeight / 2 - y * position.zoom;
+    
+    setPosition(prev => ({
+      ...prev,
+      x: newX,
+      y: newY
+    }));
+
+    // Update coordinates to show the selected star's position
+    const newCoords = screenToTelescopeCoordinates(x, y, containerWidth, containerHeight);
+    setCoordinates(newCoords);
+  }, [containerWidth, containerHeight, position.zoom]);
 
   return {
     position,
