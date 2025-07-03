@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Galaxy Display Centering CSS */
+/* Base Responsive Foundation */
 @layer base {
   html, body {
     height: 100%;
@@ -20,50 +20,51 @@
 }
 
 @layer components {
+  /* App Container - Full Viewport */
+  .app-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Main Content - Flexible Layout */
+  .main-content {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Galaxy Wrapper - Perfect Container */
+  .galaxy-wrapper {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+  }
+
   /* Galaxy Container - Perfect Centering */
   .galaxy-container {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100vw !important;
-    height: 100vh !important;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     box-sizing: border-box;
+    min-height: 100vh;
+    min-width: 100vw;
   }
   
   /* Galaxy Main - Centered Transform Origin */
   .galaxy-main {
-    position: absolute;
+    position: relative;
     transform-origin: center center;
     will-change: transform;
     backface-visibility: hidden;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
-  }
-  
-  /* Telescope Overlay - Fixed Centered Position */
-  .telescope-overlay {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    z-index: 1000;
-  }
-  
-  /* Telescope Viewport - Responsive Centering */
-  .telescope-viewport {
-    position: relative;
-    transform: translateZ(0); /* Hardware acceleration */
-    will-change: transform;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
   
   /* Galaxy Background - Full Coverage */
@@ -78,7 +79,7 @@
   
   /* Galaxy Center - Perfect Center */
   .galaxy-center {
-    position: absolute;
+    position: absolute !important;
     left: 50% !important;
     top: 50% !important;
     transform: translate(-50%, -50%) !important;
@@ -92,12 +93,70 @@
     will-change: transform, opacity;
   }
   
+  /* Telescope Overlay - Fixed Centered Position */
+  .telescope-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  
+  /* Telescope Viewport - Responsive Centering */
+  .telescope-viewport {
+    position: relative;
+    transform: translateZ(0); /* Hardware acceleration */
+    will-change: transform;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+  }
+  
   /* Telescope Center Dot - Always Centered */
   .telescope-center {
     position: absolute !important;
     left: 50% !important;
     top: 50% !important;
     transform: translate(-50%, -50%) !important;
+    width: 8px;
+    height: 8px;
+    background-color: rgb(239 68 68);
+    border-radius: 50%;
+  }
+}
+
+/* Responsive Telescope Viewport Sizing */
+@media screen and (max-width: 640px) {
+  .telescope-viewport {
+    width: min(70vw, 70vh) !important;
+    height: min(70vw, 70vh) !important;
+  }
+}
+
+@media screen and (min-width: 641px) and (max-width: 768px) {
+  .telescope-viewport {
+    width: min(60vw, 60vh) !important;
+    height: min(60vw, 60vh) !important;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .telescope-viewport {
+    width: min(50vw, 50vh) !important;
+    height: min(50vw, 50vh) !important;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  .telescope-viewport {
+    width: min(40vw, 40vh) !important;
+    height: min(40vw, 40vh) !important;
   }
 }
 
@@ -131,21 +190,6 @@
   justify-content: center !important;
 }
 
-/* Device-Specific Adjustments */
-@media screen and (max-width: 768px) {
-  .telescope-viewport {
-    width: min(80vw, 80vh) !important;
-    height: min(80vw, 80vh) !important;
-  }
-}
-
-@media screen and (min-width: 769px) {
-  .telescope-viewport {
-    width: min(60vw, 60vh) !important;
-    height: min(60vw, 60vh) !important;
-  }
-}
-
 /* High DPI Display Support */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .galaxy-main {
@@ -162,5 +206,36 @@
   
   .star-element {
     transition: none !important;
+  }
+  
+  .telescope-center {
+    animation: none !important;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .star-element {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Responsive Font Scaling */
+@media screen and (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media screen and (min-width: 641px) and (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  html {
+    font-size: 16px;
   }
 }
