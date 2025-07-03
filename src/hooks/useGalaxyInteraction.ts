@@ -3,10 +3,18 @@ import { TelescopePosition } from '../types/astronomy';
 import { screenToTelescopeCoordinates } from '../utils/starPositions';
 
 export const useGalaxyInteraction = (containerWidth: number, containerHeight: number) => {
-  const [position, setPosition] = useState<TelescopePosition>({ x: 0, y: 0, zoom: 3 }); // Changed base zoom to 3x
+  const [position, setPosition] = useState<TelescopePosition>({ 
+    x: 0, 
+    y: 0, 
+    zoom: 3 
+  });
   const [isDragging, setIsDragging] = useState(false);
   const [coordinates, setCoordinates] = useState({ ra: '12h 0m', dec: '+00°' });
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  
+  // Calculate center offsets for perfect positioning
+  const centerX = containerWidth / 2;
+  const centerY = containerHeight / 2;
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     setIsDragging(true);
@@ -19,14 +27,25 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
     const deltaX = e.clientX - dragStartRef.current.x;
     const deltaY = e.clientY - dragStartRef.current.y;
 
-    setPosition(prev => ({
-      ...prev,
-      x: prev.x + deltaX,
-      y: prev.y + deltaY
-    }));
+    setPosition(prev => {
+      const newX = prev.x + deltaX;
+      const newY = prev.y + deltaY;
+      
+      // Ensure smooth movement with proper boundaries
+      return {
+        ...prev,
+        x: newX,
+        y: newY
+      };
+    });
 
     // Update coordinates
-    const newCoords = screenToTelescopeCoordinates(e.clientX, e.clientY, containerWidth, containerHeight);
+    const newCoords = screenToTelescopeCoordinates(
+      centerX, 
+      centerY, 
+      containerWidth, 
+      containerHeight
+    );
     setCoordinates(newCoords);
 
     dragStartRef.current = { x: e.clientX, y: e.clientY };
@@ -38,22 +57,35 @@ export const useGalaxyInteraction = (containerWidth: number, containerHeight: nu
   }, []);
 
   const setZoom = useCallback((zoom: number) => {
-    setPosition(prev => ({
-      ...prev,
-      zoom: Math.max(0.5, Math.min(5, zoom)) // Increased max zoom to 5x
-    }));
+    setPosition(prev => {
+      const clampedZoom = Math.max(0.5, Math.min(5, zoom));
+      
+      return {
+        ...prev,
+        zoom: clampedZoom
+      };
+    });
   }, []);
 
   const focusOnPosition = useCallback((x: number, y: number) => {
+    // Calculate perfect centering offset
+    const offsetX = centerX - x;
+    const offsetY = centerY - y;
+    
     setPosition(prev => ({
       ...prev,
-      x: -x + containerWidth / 2,
-      y: -y + containerHeight / 2
+      x: offsetX,
+      y: offsetY
     }));
 
-    const newCoords = screenToTelescopeCoordinates(x, y, containerWidth, containerHeight);
+    const newCoords = screenToTelescopeCoordinates(
+      centerX, 
+      centerY, 
+      containerWidth, 
+      containerHeight
+    );
     setCoordinates(newCoords);
-  }, [containerWidth, containerHeight]);
+  }, [containerWidth, containerHeight, centerX, centerY]);
 
   return {
     position,
