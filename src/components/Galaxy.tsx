@@ -156,7 +156,7 @@ const GalaxyComponent: React.ForwardRefRenderFunction<HTMLDivElement, GalaxyProp
           width: `${containerWidth}px`,
           height: `${containerHeight}px`,
           position: 'relative',
-          transform: `translate(${position.x}px, ${position.y}px) scale(${position.zoom})`
+          transform: `translate(${position.x}px, ${position.y}px) scale(${position.zoom})`,
           transformOrigin: 'center center',
           willChange: 'transform'
         }}
