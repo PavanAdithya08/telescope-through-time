@@ -17,7 +17,7 @@ interface GalaxyProps {
   onCrosshairHover?: (star: Star | null) => void;
 }
 
-const GalaxyComponent: React.ForwardRefRenderFunction<HTMLDivElement, GalaxyProps> = ({
+export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
   stars,
   containerWidth,
   containerHeight,
@@ -257,6 +257,4 @@ const GalaxyComponent: React.ForwardRefRenderFunction<HTMLDivElement, GalaxyProp
       </div>
     </div>
   );
-};
-
-export const Galaxy = forwardRef(GalaxyComponent);
+});
