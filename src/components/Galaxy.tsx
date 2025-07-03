@@ -120,20 +120,13 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
   const centerGlowSize = Math.min(containerWidth, containerHeight) * 0.15;
 
   return (
-    <div
+    <div 
       ref={ref}
-      className="galaxy-container relative w-full h-full overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900"
+      className="relative w-full h-full overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900"
       onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        minWidth: '100vw'
-      }}
     >
       {/* Background stars */}
-      <div className="galaxy-background absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30">
         {Array.from({ length: Math.floor((containerWidth * containerHeight) / 4000) }).map((_, i) => (
           <div
             key={`bg-star-${i}`}
@@ -149,16 +142,11 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
 
       {/* Main galaxy container */}
       <div
-        className={`galaxy-main relative transition-transform duration-300 ${
+        className={`relative w-full h-full transition-transform duration-300 ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
         style={{
-          width: `${containerWidth}px`,
-          height: `${containerHeight}px`,
-          position: 'relative',
           transform: `translate(${position.x}px, ${position.y}px) scale(${position.zoom})`
-          transformOrigin: 'center center',
-          willChange: 'transform'
         }}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
@@ -167,14 +155,13 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
       >
         {/* Galaxy center glow */}
         <div
-          className="galaxy-center absolute bg-gradient-radial from-yellow-400/20 via-orange-500/10 to-transparent rounded-full"
+          className="absolute bg-gradient-radial from-yellow-400/20 via-orange-500/10 to-transparent rounded-full"
           style={{
             width: `${centerGlowSize}px`,
             height: `${centerGlowSize}px`,
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            position: 'absolute'
+            left: `${containerWidth / 2}px`,
+            top: `${containerHeight / 2}px`,
+            transform: 'translate(-50%, -50%)'
           }}
         />
 
@@ -187,7 +174,7 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
           return (
             <div
               key={star.id}
-              className={`star-element absolute rounded-full transition-all duration-300 cursor-pointer touch-manipulation
+              className={`absolute rounded-full transition-all duration-300 cursor-pointer touch-manipulation
                 ${getStarColor(star, isSelected)} 
                 ${isUnderCrosshair ? 'scale-125 ring-2 ring-white/50' : ''}
                 hover:scale-125 md:hover:scale-150 active:scale-110 md:active:scale-125 z-10
@@ -199,9 +186,7 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
                 width: `${baseSize}px`,
                 height: `${baseSize}px`,
                 opacity: star.brightness,
-                boxShadow: getStarGlow(star, isSelected),
-                transform: 'translate(-50%, -50%)',
-                position: 'absolute'
+                boxShadow: getStarGlow(star, isSelected)
               }}
               onClick={(e) => {
                 e.stopPropagation();
@@ -214,9 +199,9 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
       </div>
 
       {/* Telescope viewport overlay */}
-      <div className="telescope-overlay fixed inset-0 flex items-center justify-center pointer-events-none z-50">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div 
-          className="telescope-viewport border-4 border-white/30 rounded-full relative"
+          className="border-4 border-white/30 rounded-full relative"
           style={{
             width: `${crosshairSize}px`,
             height: `${crosshairSize}px`
@@ -252,7 +237,7 @@ export const Galaxy = forwardRef<HTMLDivElement, GalaxyProps>(({
           />
           
           {/* Center dot */}
-          <div className="telescope-center absolute left-1/2 top-1/2 w-2 h-2 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+          <div className="absolute left-1/2 top-1/2 w-2 h-2 bg-red-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
         </div>
       </div>
     </div>

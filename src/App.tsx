@@ -133,7 +133,7 @@ function App() {
   }
 
   return (
-    <div className="app-container h-screen bg-slate-900 flex overflow-hidden relative">
+    <div className="h-screen bg-slate-900 flex overflow-hidden relative">
       {/* Discovery Panel */}
       <DiscoveryPanel
         filter={filter}
@@ -146,7 +146,7 @@ function App() {
       />
 
       {/* Main Content */}
-      <div className="main-content flex-1 relative overflow-hidden">
+      <div className="flex-1 relative">
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsDiscoveryPanelOpen(true)}
@@ -197,7 +197,7 @@ function App() {
         />
 
         {/* Galaxy View */}
-        <div className="galaxy-wrapper w-full h-full relative overflow-hidden">
+        <div className="w-full h-full">
           <Galaxy
             ref={galaxyContainerRef}
             stars={stars}
