@@ -5,6 +5,7 @@ import { DiscoveryPanel } from './components/DiscoveryPanel';
 import { Calendar } from './components/Calendar';
 import { EventModal } from './components/EventModal';
 import { useGalaxyInteraction } from './hooks/useGalaxyInteraction';
+import { useContainerSize } from './hooks/useContainerSize';
 import { generateStarPositions } from './utils/starPositions';
 import { astronomyApi } from './services/astronomyApi';
 import { Star, FilterType, DayEvents } from './types/astronomy';
@@ -12,8 +13,7 @@ import { Satellite, Wifi, WifiOff, Menu, X, ArrowLeft } from 'lucide-react';
 
 function App() {
   const [showMainMenu, setShowMainMenu] = useState(true);
-  const galaxyContainerRef = useRef<HTMLDivElement>(null);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 800, height: 600 });
+  const { containerRef, width, height } = useContainerSize();
   const [stars, setStars] = useState<Star[]>([]);
   const [selectedStar, setSelectedStar] = useState<Star | null>(null);
   const [filter, setFilter] = useState<FilterType>('All');
@@ -33,36 +33,14 @@ function App() {
     handleMouseUp,
     setZoom,
     focusOnPosition
-  } = useGalaxyInteraction(containerDimensions.width, containerDimensions.height);
-
-  // Update container dimensions and regenerate stars when window resizes
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (galaxyContainerRef.current) {
-        const rect = galaxyContainerRef.current.getBoundingClientRect();
-        setContainerDimensions({ width: rect.width, height: rect.height });
-      }
-    };
-
-    const resizeObserver = new ResizeObserver(updateDimensions);
-    if (galaxyContainerRef.current) {
-      resizeObserver.observe(galaxyContainerRef.current);
-    }
-
-    // Initial measurement
-    updateDimensions();
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
+  } = useGalaxyInteraction(width, height);
 
   // Regenerate stars when container dimensions change
   useEffect(() => {
-    if (containerDimensions.width > 0 && containerDimensions.height > 0) {
-      setStars(generateStarPositions(containerDimensions.width, containerDimensions.height));
+    if (width > 0 && height > 0) {
+      setStars(generateStarPositions(width, height));
     }
-  }, [containerDimensions]);
+  }, [width, height]);
 
   // Close discovery panel when clicking outside on mobile
   const handleOutsideClick = () => {
@@ -199,10 +177,10 @@ function App() {
         {/* Galaxy View */}
         <div className="w-full h-full">
           <Galaxy
-            ref={galaxyContainerRef}
+            ref={containerRef}
             stars={stars}
-            containerWidth={containerDimensions.width}
-            containerHeight={containerDimensions.height}
+            containerWidth={width}
+            containerHeight={height}
             position={position}
             selectedStar={selectedStar}
             filter={filter}
