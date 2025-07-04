@@ -1,15 +1,20 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 export const useContainerSize = () => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [node, setNode] = useState<HTMLDivElement | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
+  // Callback ref function
+  const containerRef = useCallback((node: HTMLDivElement | null) => {
+    setNode(node);
+  }, []);
+
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!node) return;
 
     const updateDimensions = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
+      if (node) {
+        const rect = node.getBoundingClientRect();
         setSize({
           width: rect.width,
           height: rect.height
@@ -31,7 +36,7 @@ export const useContainerSize = () => {
       }
     });
 
-    resizeObserver.observe(containerRef.current);
+    resizeObserver.observe(node);
 
     // Also listen for window resize as backup
     window.addEventListener('resize', updateDimensions);
@@ -40,7 +45,7 @@ export const useContainerSize = () => {
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateDimensions);
     };
-  }, []);
+  }, [node]); // Now depends on the node state
 
   return { 
     containerRef, 
