@@ -8,7 +8,7 @@ Telescope Through Time is an innovative web application designed to make astrono
 
 This application offers a unique way to discover the cosmos with its blend of interactive design and real-time data:
 
-*   *Interactive Celestial Calendar*: Each star in the virtual galaxy corresponds to a specific date in 2025 (MM-DD format), providing a dynamic astronomical calendar where users can uncover daily space events, missions, and celestial phenomena.
+*   *Interactive Celestial Calendar*: Each star in the virtual galaxy corresponds to a specific date in the year (MM-DD format), providing a dynamic astronomical calendar where users can uncover daily space events, missions, and celestial phenomena.
 *   *Virtual Telescope Experience*: Users can navigate through the galaxy using a draggable telescope viewport, complete with crosshairs, zoom controls, and coordinate tracking, simulating an authentic astronomical observation.
 *   *Real-Time Event Discovery Engine*: Each star fetches real astronomical events for its corresponding date from the NASA API. Events are categorized (Stars, Planets, Comets, Space Missions) and include fascinating facts and links to authoritative astronomy sources.
 *   *Advanced Filtering & Controls*: Users can filter stars by event type, adjust zoom levels (1x to 5x magnification), and observe visual indicators (blue stars for events, selected stars with a golden glow).
